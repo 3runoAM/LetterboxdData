@@ -1,0 +1,16 @@
+:root {
+    --primary-color: #00d94f;
+    --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
+    --text-primary: #ebeff2;
+    --text-secondary: #A9BBCC;
+    --font-family: 'Graphik', sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background:var(--background-gradient);
+    color: var(--text-primary);
+    font-family: 'Graphik', sans-serif;
+}
