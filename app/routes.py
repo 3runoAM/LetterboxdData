@@ -30,15 +30,19 @@ def save_files_route():
 
 @main.route("/dashboard", methods=["GET"])
 def dashboard():
-    df_diary, df_streaks = load_processed_diary()
-    df_rating = load_processed_ratings()
+    try:
+        df_diary, df_streaks = load_processed_diary()
+        df_rating = load_processed_ratings()
 
-    dia_semana = plot_dia_semana(df_diary)
-    evolucao_gosto = plot_evolucao_gosto(df_diary)
-    taxa_rewatch = plot_taxa_rewatch(df_diary)
-    time_lag = plot_time_lag(df_diary)
-    distribuicao_notas = plot_distribuicao_notas(df_rating)
-    decada_ouro = plot_decada_ouro(df_rating)
+        dia_semana = plot_dia_semana(df_diary)
+        evolucao_gosto = plot_evolucao_gosto(df_diary)
+        taxa_rewatch = plot_taxa_rewatch(df_diary)
+        time_lag = plot_time_lag(df_diary)
+        distribuicao_notas = plot_distribuicao_notas(df_rating)
+        decada_ouro = plot_decada_ouro(df_rating)
+    except FileNotFoundError:
+        flash("Nenhum arquivo encontrado. Por favor, faça o upload dos arquivos necessários.")
+        return redirect(url_for("main.upload_files_route"))
 
     return render_template("dashboard.html",
                            dia_semana=dia_semana,
