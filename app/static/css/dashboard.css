@@ -10,7 +10,25 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
     background:var(--background-gradient);
     color: var(--text-primary);
     font-family: 'Graphik', sans-serif;
+}
+
+.dashboard {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.grafico-card {
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    max-width: 40%;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
