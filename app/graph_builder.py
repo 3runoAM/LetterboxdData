@@ -77,7 +77,7 @@ def plot_time_lag(df_diary):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color='#fff'),
-        # Remove as linhas de grade para um visual mais limpo (opcional)
+        
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)')
     )
@@ -101,7 +101,6 @@ def plot_distribuicao_notas(df_ratings):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color='#fff'),
-        # Remove as linhas de grade para um visual mais limpo (opcional)
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)')
     )
@@ -119,7 +118,6 @@ def plot_decada_ouro(df_ratings):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color='#fff'),
-        # Remove as linhas de grade para um visual mais limpo (opcional)
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)')
     )
