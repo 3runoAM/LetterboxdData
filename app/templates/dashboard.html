@@ -7,5 +7,31 @@
     </head>
     <body>
         <h1>Letterboxd Data Dashboard</h1>
+
+        <div class="dashboard">
+            <div  class="grafico-card">
+                {{ dia_semana | safe }}
+            </div>
+
+            <div class="grafico-card">
+                {{ evolucao_gosto | safe }}
+            </div>
+
+            <div class="grafico-card">
+                {{ taxa_rewatch | safe }}
+            </div>
+
+            <div class="grafico-card">
+                {{ time_lag | safe }}
+            </div>
+
+            <div class="grafico-card">
+                {{ distribuicao_notas | safe }}
+            </div>
+
+            <div class="grafico-card">
+                {{ decada_ouro | safe }}
+            </div>
+        </div>
     </body>
 </html>
