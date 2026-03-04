@@ -1,8 +1,8 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from .data_processing import load_processed_diary, load_processed_ratings
 from .file_processing import validate_files, save_files
-from .graph_builder import plot_volume_por_periodo, plot_dia_semana, plot_evolucao_gosto, plot_taxa_rewatch, \
-    plot_time_lag, get_max_streak, plot_distribuicao_notas, plot_decada_ouro
+from .graph_builder import plot_dia_semana, plot_evolucao_gosto, plot_taxa_rewatch, \
+    plot_time_lag, plot_distribuicao_notas, plot_decada_ouro
 
 main = Blueprint("main", __name__)
 
