@@ -4,9 +4,10 @@ from .config import DATA_DIR
 
 def load_processed_diary():
     df_diary = pandas.read_csv(os.path.join(DATA_DIR, "diary.csv"))
-    df_diary = df_diary.dropna(subset=['Watched Date']).copy()
 
     df_diary['Watched Date'] = pandas.to_datetime(df_diary['Watched Date'], errors='coerce')
+    df_diary = df_diary.dropna(subset=['Watched Date']).copy()
+
     df_diary['Year'] = pandas.to_numeric(df_diary['Year'], errors='coerce')
     df_diary['Rewatch'] = df_diary['Rewatch'].fillna('No').map({'Yes': True, 'No': False})
 
