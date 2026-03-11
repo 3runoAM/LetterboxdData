@@ -1,22 +1,12 @@
 import plotly.express as px
 
-
-def plot_volume_por_periodo(df_diary):
-    volume = df_diary.groupby("Ano-Mes").size().reset_index(name="Filmes")
-
-    fig = px.bar(volume, x="Ano-Mes", y="Filmes", title="Volume de Filmes por Mês",
-                 color_discrete_sequence=["#00B020"])
-
-    fig.update_layout(xaxis_tickangle=-45)
-    return fig.to_html(full_html=False)
-
-
-def plot_dia_semana(df_diary):
+def plot_favorite_day(df_diary):
     ordem_dias = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     nomes_br = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
 
     volume = df_diary["Dia_da_Semana"].value_counts().reindex(ordem_dias).reset_index()
     volume.columns = ["Dia", "Quantidade"]
+
     volume["Dia"] = nomes_br
 
     fig = px.bar(volume, x="Dia", y="Quantidade", title="Dia da Semana Favorito", color_discrete_sequence=["#00d94f"])
@@ -29,7 +19,7 @@ def plot_dia_semana(df_diary):
     return fig.to_html(full_html=False)
 
 
-def plot_evolucao_gosto(df_diary):
+def plot_likeness_series(df_diary):
     evolucao = df_diary.groupby("Ano_Assistido")["Rating"].mean().reset_index()
     fig = px.line(evolucao, x="Ano_Assistido", y="Rating", markers=True,
                   title="Evolução do Gosto (Média de Notas por Ano)",
@@ -46,7 +36,7 @@ def plot_evolucao_gosto(df_diary):
     return fig.to_html(full_html=False)
 
 
-def plot_taxa_rewatch(df_diary):
+def plot_rewatch_rate(df_diary):
     rewatches = df_diary["Rewatch"].value_counts().reset_index()
     rewatches.columns = ["Rewatch", "Quantidade"]
     rewatches["Rewatch"] = rewatches["Rewatch"].map({True: "Revistos", False: "Inéditos"})
@@ -78,7 +68,6 @@ def plot_time_lag(df_diary):
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#fff"),
-
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.1)")
     )
@@ -89,13 +78,7 @@ def plot_time_lag(df_diary):
 
     return fig.to_html(full_html=False)
 
-
-def get_max_streak(df_streaks):
-    max_dias = df_streaks["Dias_Consecutivos"].max()
-    return max_dias
-
-
-def plot_distribuicao_notas(df_ratings):
+def plot_rating_distribution(df_ratings):
     dist = df_ratings["Rating"].value_counts().sort_index().reset_index()
     dist.columns = ["Estrelas", "Quantidade"]
 
@@ -114,7 +97,7 @@ def plot_distribuicao_notas(df_ratings):
     return fig.to_html(full_html=False)
 
 
-def plot_decada_ouro(df_ratings):
+def plot_favorite_decade(df_ratings):
     decadas = df_ratings.groupby("Decade")["Rating"].mean().reset_index()
     fig = px.bar(decadas, x="Decade", y="Rating", title="Década de Ouro (Média de Nota por Década)",
                  color="Rating", color_continuous_scale="Viridis")
