@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <title>Data Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
 </head>
     <body>
         <h1>Letterboxd Data Dashboard</h1>
 
         <div class="container">
-
             <section class="metrics-section">
                 <div class="metric-container">
                     <p class="metric-value">{{ context.total_movies }}</p>
@@ -23,19 +26,52 @@
                     <p class="metric-value">{{ context.favorite_decade }}</p>
                     <p class="metric-label">Sua Década Favorita</p>
                 </div>
+                <div class="metric-container">
+                    <p class="metric-value">{{ context.average_rating }}</p>
+                    <p class="metric-label">Média de avaliações</p>
+                </div>
             </section>
 
-            <section class="rewatch-section">
-                <div class="rewatch-profile">
-                    <h1>{{ context.rewatch_profile }}</h1>
+            <div class="first-charts-container">
+                <section class="rewatch-section">
+                    <h2>{{ context.rewatch_profile }}</h2>
                     <p class="hero-title">{{ context.hero_title }}</p>
-                </div>
 
-                <div class="grafico-card">
-                    {{ rewatch_rate | safe }}
-                </div>
-            </section>
+                    <div class="rewatch-card">
+                        {{ rewatch_rate | safe }}
+                    </div>
+                </section>
 
+                <div class="vertical-separator"></div>
+
+                <section class="streak-section">
+
+                    <div class="circle-container">
+                        <div class="central-text">
+                            {% if context.longest_streak.days > 1 %}
+                                <div class="streak-container">
+                                    <h2>{{ context.longest_streak.days }}</h2>
+                                    <h3>dias</h3>
+                                </div>
+                            {% else %}
+                                <div class="streak-container">
+                                    <h2>0</h2>
+                                    <h3>Maratonas</h3>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="streak-details">
+                        {% if context.longest_streak.days > 1 %}
+                            <p class="streak-title">Maratona mais duradoura</p>
+                            <p>{{ context.longest_streak.start }} à {{ context.longest_streak.end }}</p>
+                        {% else %}
+                            <p class="streak-title">Assista filmes todos os dias para começar uma maratona</p>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
 
 
             <div class="graphic-dashboard">
@@ -59,8 +95,6 @@
                     {{ favorite_decade | safe }}
                 </div>
             </div>
-
-
         </div>
     </body>
 </html>
