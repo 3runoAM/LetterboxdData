@@ -1,37 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Letterboxd Data</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <title>Data Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
     <body>
         <h1>Letterboxd Data Dashboard</h1>
 
-        <div class="dashboard">
-            <div  class="grafico-card">
-                {{ dia_semana | safe }}
+        <div class="container">
+
+            <section class="metrics-section">
+                <div class="metric-container">
+                    <p class="metric-value">{{ context.total_movies }}</p>
+                    <p class="metric-label">Filmes Assistidos</p>
+                </div>
+                <div class="metric-container">
+                    <p class="metric-value">{{ context.favorite_day }}</p>
+                    <p class="metric-label">Dia de Cinema</p>
+                </div>
+                <div class="metric-container">
+                    <p class="metric-value">{{ context.favorite_decade }}</p>
+                    <p class="metric-label">Sua Década Favorita</p>
+                </div>
+            </section>
+
+            <section class="rewatch-section">
+                <div class="rewatch-profile">
+                    <h1>{{ context.rewatch_profile }}</h1>
+                    <p class="hero-title">{{ context.hero_title }}</p>
+                </div>
+
+                <div class="grafico-card">
+                    {{ rewatch_rate | safe }}
+                </div>
+            </section>
+
+
+
+            <div class="graphic-dashboard">
+                <div class="grafico-card">
+                    {{ favorite_day | safe }}
+                </div>
+
+                <div class="grafico-card">
+                    {{ likeness_series | safe }}
+                </div>
+
+                <div class="grafico-card">
+                    {{ time_lag | safe }}
+                </div>
+
+                <div class="grafico-card">
+                    {{ rating_distribution | safe }}
+                </div>
+
+                <div class="grafico-card">
+                    {{ favorite_decade | safe }}
+                </div>
             </div>
 
-            <div class="grafico-card">
-                {{ evolucao_gosto | safe }}
-            </div>
 
-            <div class="grafico-card">
-                {{ taxa_rewatch | safe }}
-            </div>
-
-            <div class="grafico-card">
-                {{ time_lag | safe }}
-            </div>
-
-            <div class="grafico-card">
-                {{ distribuicao_notas | safe }}
-            </div>
-
-            <div class="grafico-card">
-                {{ decada_ouro | safe }}
-            </div>
         </div>
     </body>
 </html>

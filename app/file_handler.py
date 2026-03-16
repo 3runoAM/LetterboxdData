@@ -37,3 +37,11 @@ def save_files(files: list):
             safe_file_name = secure_filename(file.filename)
             path = os.path.join(DATA_DIR, safe_file_name)
             file.save(path)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def is_data_available():
+    for filename in EXPECTED_DATA.keys():
+        if not os.path.exists(os.path.join(DATA_DIR, filename)):
+            return False
+    return True

@@ -1,14 +1,19 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
-from .data_processing import load_processed_diary, load_processed_ratings
-from .file_processing import validate_files, save_files
-from .graph_builder import plot_volume_por_periodo, plot_dia_semana, plot_evolucao_gosto, plot_taxa_rewatch, \
-    plot_time_lag, get_max_streak, plot_distribuicao_notas, plot_decada_ouro
+
+from .context_engine import get_context
+from .data_processing import process_diary, process_ratings, process_watched, get_processed_data
+from .file_handler import validate_files, save_files, is_data_available
+from .graph_builder import plot_favorite_day, plot_likeness_series, plot_rewatch_rate, \
+    plot_time_lag, plot_rating_distribution, plot_favorite_decade
 
 main = Blueprint("main", __name__)
 
 @main.route("/", methods=["GET"])
-def upload_files_route():
-    return render_template("uploadFiles.html")
+def main_route():
+    if is_data_available():
+        return redirect(url_for("main.dashboard"))
+    else:
+        return render_template("uploadFiles.html")
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -19,7 +24,7 @@ def save_files_route():
 
     if not valid:
         flash(message)
-        return redirect(url_for("main.upload_files_route"))
+        return redirect(url_for("main.main_route"))
 
     save_files(files)
 
@@ -30,20 +35,33 @@ def save_files_route():
 
 @main.route("/dashboard", methods=["GET"])
 def dashboard():
-    df_diary, df_streaks = load_processed_diary()
-    df_rating = load_processed_ratings()
+    try:
+        # PROCESSAMENTO E ENRIQUECIMENTO DOS DADOS
+        df_diary, df_rating, df_watched = get_processed_data()
 
-    dia_semana = plot_dia_semana(df_diary)
-    evolucao_gosto = plot_evolucao_gosto(df_diary)
-    taxa_rewatch = plot_taxa_rewatch(df_diary)
-    time_lag = plot_time_lag(df_diary)
-    distribuicao_notas = plot_distribuicao_notas(df_rating)
-    decada_ouro = plot_decada_ouro(df_rating)
+        # GERANDO INSIGHTS
+        context = get_context(df_watched, df_diary, df_rating)
+
+        # GERAÇÃO DOS GRÁFICOS COM PLOTLY
+        favorite_day = plot_favorite_day(df_diary)
+        likeness_series = plot_likeness_series(df_diary)
+        rewatch_rate = plot_rewatch_rate(df_diary)
+        time_lag = plot_time_lag(df_diary)
+        rating_distribution = plot_rating_distribution(df_rating)
+        favorite_decade = plot_favorite_decade(df_rating)
+
+    except FileNotFoundError:
+        flash("Nenhum arquivo encontrado. Faça o upload dos arquivos necessários")
+        return redirect(url_for("main.main_route"))
+    except Exception as e:
+        print(f"Erro ao processar os dados: {e}")
+        return redirect(url_for("main.main_route"))
 
     return render_template("dashboard.html",
-                           dia_semana=dia_semana,
-                           evolucao_gosto=evolucao_gosto,
-                           taxa_rewatch=taxa_rewatch,
+                           context=context,
+                           favorite_day=favorite_day,
+                           likeness_series=likeness_series,
+                           rewatch_rate=rewatch_rate,
                            time_lag=time_lag,
-                           distribuicao_notas=distribuicao_notas,
-                           decada_ouro=decada_ouro)
+                           rating_distribution=rating_distribution,
+                           favorite_decade=favorite_decade)
