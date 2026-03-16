@@ -1,5 +1,40 @@
+import pandas
+
 def get_total_movies(df_watched):
     return df_watched['Letterboxd URI'].nunique()
+
+def get_average_rating(df_rating):
+    return round(df_rating['Rating'].mean(), 1)
+
+def get_longest_streak(df_diary):
+    dates = df_diary['Watched Date'].drop_duplicates().sort_values(ignore_index=True)
+
+    if dates.empty:
+        return {"days": 0, "start": None, "end": None}
+
+    is_not_consecutive = dates.diff() != pandas.Timedelta(days=1)
+
+    streak_ids = is_not_consecutive.cumsum()
+
+    streaks = dates.groupby(streak_ids).agg(['count', 'min', 'max'])
+    longest = streaks.loc[streaks['count'].idxmax()]
+
+    meses_pt = {
+        1: 'Janeiro', 2: 'Fevereiro', 3: 'Março', 4: 'Abril',
+        5: 'Maio', 6: 'Junho', 7: 'Julho', 8: 'Agosto',
+        9: 'Setembro', 10: 'Outubro', 11: 'Novembro', 12: 'Dezembro'
+    }
+
+    def format_date_pt(date_obj):
+        if pandas.isna(date_obj):
+            return None
+        return f"{date_obj.day} de {meses_pt[date_obj.month]} de {date_obj.year}"
+
+    return {
+        "days": int(longest['count']),
+        "start": format_date_pt(longest['min']),
+        "end": format_date_pt(longest['max'])
+    }
 
 def get_favorite_day(df_diary):
     days_ptbr = {
@@ -58,13 +93,13 @@ def get_rewatch_profile(df_diary):
         hero_title = f"Com {taxa_rewatch:.1f}% de filmes revistos, você tem filmes de conforto e ama revisitá-los. Por que arriscar se o clássico é garantido?"
     elif taxa_rewatch > 15:
         rewatch_profile = "Curador Equilibrado"
-        hero_title = f"Sua taxa de rewatch é de {taxa_rewatch:.1f}%. Você não tem medo de fazer novas descobertas, mas nunca abandona seus filmes conforto"
+        hero_title = f"Sua taxa de rewatch é de {taxa_rewatch:.1f}%. Você não tem medo de fazer novas descobertas, mas nunca abandona seus filmes conforto."
     elif taxa_rewatch > 5:
         rewatch_profile = "Explorador"
-        hero_title = f"Apenas {taxa_rewatch:.1f}% dos seus filmes são repetições. O mundo é grande demais para gastar tempo vendo a mesma coisa."
+        hero_title = f"Você reassiste apenas {taxa_rewatch:.1f}% dos filmes. O mundo é grande demais para gastar tempo vendo a mesma coisa."
     else:
         rewatch_profile = "Caçador de Inéditos"
-        hero_title = f"Você reassistiu filmes {taxa_rewatch:.1f}% das vezes! Você tem sede por novidade, reprise é uma palavra que não existe no seu dicionário"
+        hero_title = f"Você reassistiu filmes {taxa_rewatch:.1f}% das vezes! Reprise é uma palavra que não existe no seu dicionário."
 
     return {
         "rewatch_profile": rewatch_profile,
@@ -74,12 +109,16 @@ def get_rewatch_profile(df_diary):
 
 def get_context(df_watched, df_diary, df_ratings):
     total_movies = get_total_movies(df_watched)
+    average_rating = get_average_rating(df_ratings)
+    longest_streak = get_longest_streak(df_diary)
     favorite_day = get_favorite_day(df_diary)
     decade_context = get_favorite_decade_context(df_ratings)
     rewatch_context = get_rewatch_profile(df_diary)
 
     return {
         "total_movies": total_movies,
+        "longest_streak": longest_streak,
+        "average_rating": average_rating,
         "favorite_day": favorite_day,
         "favorite_decade": decade_context["favorite_decade"],
         "top_movies_str": decade_context["top_movies_str"],
