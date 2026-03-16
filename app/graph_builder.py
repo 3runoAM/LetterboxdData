@@ -39,18 +39,20 @@ def plot_likeness_series(df_diary):
 def plot_rewatch_rate(df_diary):
     rewatches = df_diary["Rewatch"].value_counts().reset_index()
     rewatches.columns = ["Rewatch", "Quantidade"]
+
     rewatches["Rewatch"] = rewatches["Rewatch"].map({True: "Revistos", False: "Inéditos"})
 
-    fig = px.pie(rewatches, values="Quantidade", names="Rewatch", title="Taxa de Rewatch",
-                 color="Rewatch", color_discrete_map={"Revistos": "#f37b01", "Inéditos": "#3eb7eb"})
+    fig = px.pie(rewatches, values="Quantidade", names="Rewatch", color="Rewatch",
+                 color_discrete_map={"Revistos": "#f37b01", "Inéditos": "#3eb7eb"}, hole=0.4)
 
     fig.update_layout(
-        xaxis_tickangle=-45,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#fff"),
-        xaxis=dict(showgrid=False),
-        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.1)")
+    )
+
+    fig.update_traces(
+        texttemplate="%{percent:.1%}",
     )
 
     return fig.to_html(full_html=False)
@@ -82,7 +84,7 @@ def plot_rating_distribution(df_ratings):
     dist = df_ratings["Rating"].value_counts().sort_index().reset_index()
     dist.columns = ["Estrelas", "Quantidade"]
 
-    fig = px.bar(dist, x="Estrelas", y="Quantidade", title="Curva de Notas (Distribuição Geral)",
+    fig = px.bar(dist, x="Estrelas", y="Quantidade",
                  color_discrete_sequence=["#00B020"])
 
     fig.update_xaxes(dtick=0.5)
@@ -92,8 +94,9 @@ def plot_rating_distribution(df_ratings):
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#fff"),
         xaxis=dict(showgrid=False),
-        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.1)")
+        yaxis=dict(showgrid=False, gridcolor="rgba(255,255,255,0.1)")
     )
+
     return fig.to_html(full_html=False)
 
 

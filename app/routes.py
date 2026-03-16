@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 
-from .context_engine import get_context
+from .feature_engine import get_context
 from .data_processing import process_diary, process_ratings, process_watched, get_processed_data
 from .file_handler import validate_files, save_files, is_data_available
 from .graph_builder import plot_favorite_day, plot_likeness_series, plot_rewatch_rate, \
@@ -54,7 +54,7 @@ def dashboard():
         flash("Nenhum arquivo encontrado. Faça o upload dos arquivos necessários")
         return redirect(url_for("main.main_route"))
     except Exception as e:
-        print(f"Erro ao processar os dados: {e}")
+        print(f"Erro ao processar os dados: {e.with_traceback(e.__traceback__)}")
         return redirect(url_for("main.main_route"))
 
     return render_template("dashboard.html",
