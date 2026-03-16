@@ -1,7 +1,6 @@
 def get_total_movies(df_watched):
     return df_watched['Letterboxd URI'].nunique()
 
-
 def get_favorite_day(df_diary):
     days_ptbr = {
         "Monday": "Segunda-feira",
@@ -23,7 +22,6 @@ def _format_top_movies(top_movies_list):
     elif len(top_movies_list) == 1:
         return top_movies_list[0]
     return ""
-
 
 def get_favorite_decade_context(df_ratings):
     decades = df_ratings.groupby("Decade").agg(
@@ -60,7 +58,7 @@ def get_rewatch_profile(df_diary):
         hero_title = f"Com {taxa_rewatch:.1f}% de filmes revistos, você tem filmes de conforto e ama revisitá-los. Por que arriscar se o clássico é garantido?"
     elif taxa_rewatch > 15:
         rewatch_profile = "Curador Equilibrado"
-        hero_title = f"Sua taxa de rewatch é de {taxa_rewatch:.1f}%. Você desbrava o novo, mas nunca abandona as obras que marcaram sua vida."
+        hero_title = f"Sua taxa de rewatch é de {taxa_rewatch:.1f}%. Você não tem medo de fazer novas descobertas, mas nunca abandona seus filmes conforto"
     elif taxa_rewatch > 5:
         rewatch_profile = "Explorador"
         hero_title = f"Apenas {taxa_rewatch:.1f}% dos seus filmes são repetições. O mundo é grande demais para gastar tempo vendo a mesma coisa."
