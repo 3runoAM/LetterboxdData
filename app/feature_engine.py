@@ -1,10 +1,13 @@
 import pandas
 
+
 def get_total_movies(df_watched):
     return df_watched['Letterboxd URI'].nunique()
 
+
 def get_average_rating(df_rating):
     return round(df_rating['Rating'].mean(), 1)
+
 
 def get_longest_streak(df_diary):
     dates = df_diary['Watched Date'].drop_duplicates().sort_values(ignore_index=True)
@@ -36,6 +39,7 @@ def get_longest_streak(df_diary):
         "end": format_date_pt(longest['max'])
     }
 
+
 def get_favorite_day(df_diary):
     days_ptbr = {
         "Monday": "Segunda-feira",
@@ -51,6 +55,7 @@ def get_favorite_day(df_diary):
 
     return days_ptbr.get(favorite_day_en, favorite_day_en)
 
+
 def _format_top_movies(top_movies_list):
     if len(top_movies_list) > 1:
         return ", ".join(top_movies_list[:-1]) + " e " + top_movies_list[-1]
@@ -58,7 +63,8 @@ def _format_top_movies(top_movies_list):
         return top_movies_list[0]
     return ""
 
-def get_favorite_decade_context(df_ratings):
+
+def get_favorite_decade(df_ratings):
     decades = df_ratings.groupby("Decade").agg(
         Media=("Rating", "mean"),
         Contagem=("Rating", "count")
@@ -77,11 +83,7 @@ def get_favorite_decade_context(df_ratings):
     top_movies_list = top_movies_from_fave_decade["Name"].tolist()
     top_movies_str = _format_top_movies(top_movies_list)
 
-    return {
-        "favorite_decade": favorite_decade,
-        "top_movies_str": top_movies_str
-    }
-
+    return favorite_decade
 
 def get_rewatch_profile(df_diary):
     total_diary = len(df_diary)
@@ -90,38 +92,37 @@ def get_rewatch_profile(df_diary):
 
     if taxa_rewatch > 40:
         rewatch_profile = "Guardião da Nostalgia"
-        hero_title = f"Com {taxa_rewatch:.1f}% de filmes revistos, você tem filmes de conforto e ama revisitá-los. Por que arriscar se o clássico é garantido?"
+        rewatch_description = f"Com {taxa_rewatch:.1f}% de filmes revistos, você tem filmes de conforto e ama revisitá-los. Por que arriscar se o clássico é garantido?"
     elif taxa_rewatch > 15:
         rewatch_profile = "Curador Equilibrado"
-        hero_title = f"Sua taxa de rewatch é de {taxa_rewatch:.1f}%. Você não tem medo de fazer novas descobertas, mas nunca abandona seus filmes conforto."
+        rewatch_description = f"Sua taxa de rewatch é de {taxa_rewatch:.1f}%. Você não tem medo de fazer novas descobertas, mas nunca abandona seus filmes conforto."
     elif taxa_rewatch > 5:
         rewatch_profile = "Explorador"
-        hero_title = f"Você reassiste apenas {taxa_rewatch:.1f}% dos filmes. O mundo é grande demais para gastar tempo vendo a mesma coisa."
+        rewatch_description = f"Você reassiste apenas {taxa_rewatch:.1f}% dos filmes. O mundo é grande demais para gastar tempo vendo a mesma coisa."
     else:
         rewatch_profile = "Caçador de Inéditos"
-        hero_title = f"Você reassistiu filmes {taxa_rewatch:.1f}% das vezes! Reprise é uma palavra que não existe no seu dicionário."
+        rewatch_description = f"Você reassistiu filmes {taxa_rewatch:.1f}% das vezes! Reprise é uma palavra que não existe no seu dicionário."
 
     return {
         "rewatch_profile": rewatch_profile,
-        "hero_title": hero_title
+        "rewatch_description": rewatch_description
     }
 
 
 def get_context(df_watched, df_diary, df_ratings):
-    total_movies = get_total_movies(df_watched)
-    average_rating = get_average_rating(df_ratings)
+    total_movies = {"label": "Filmes Assistidos", "value": get_total_movies(df_watched)}
+    favorite_day = {"label": "Dia de cinema", "value": get_favorite_day(df_diary)}
+    favorite_decade = {"label": "Década favorita", "value": get_favorite_decade(df_ratings)}
+    average_rating = {"label": "Média de avaliação", "value": get_average_rating(df_ratings)}
+
+    metric_list = [total_movies, favorite_day, favorite_decade, average_rating]
+
     longest_streak = get_longest_streak(df_diary)
-    favorite_day = get_favorite_day(df_diary)
-    decade_context = get_favorite_decade_context(df_ratings)
     rewatch_context = get_rewatch_profile(df_diary)
 
     return {
-        "total_movies": total_movies,
+        "metric_list": metric_list,
         "longest_streak": longest_streak,
-        "average_rating": average_rating,
-        "favorite_day": favorite_day,
-        "favorite_decade": decade_context["favorite_decade"],
-        "top_movies_str": decade_context["top_movies_str"],
         "rewatch_profile": rewatch_context["rewatch_profile"],
-        "hero_title": rewatch_context["hero_title"]
+        "rewatch_description": rewatch_context["rewatch_description"]
     }

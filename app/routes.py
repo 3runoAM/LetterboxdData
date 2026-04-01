@@ -11,9 +11,9 @@ main = Blueprint("main", __name__)
 @main.route("/", methods=["GET"])
 def main_route():
     if is_data_available():
-        return redirect(url_for("main.dashboard"))
+        return redirect(url_for("main.perfil_route"))
     else:
-        return render_template("uploadFiles.html")
+        return render_template("upload.html")
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -29,12 +29,12 @@ def save_files_route():
     save_files(files)
 
     flash("Arquivos salvos com sucesso")
-    return redirect(url_for("main.dashboard"))
+    return redirect(url_for("main.perfil_route"))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@main.route("/dashboard", methods=["GET"])
-def dashboard():
+@main.route("/perfil", methods=["GET"])
+def perfil_route():
     try:
         # PROCESSAMENTO E ENRIQUECIMENTO DOS DADOS
         df_diary, df_rating, df_watched = get_processed_data()
@@ -57,7 +57,7 @@ def dashboard():
         print(f"Erro ao processar os dados: {e.with_traceback(e.__traceback__)}")
         return redirect(url_for("main.main_route"))
 
-    return render_template("dashboard.html",
+    return render_template("perfil.html",
                            context=context,
                            favorite_day=favorite_day,
                            likeness_series=likeness_series,
@@ -65,3 +65,9 @@ def dashboard():
                            time_lag=time_lag,
                            rating_distribution=rating_distribution,
                            favorite_decade=favorite_decade)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@main.route("/perfilAtual", methods=["GET"])
+def perfil_atual():
+    return render_template("perfilAtual.html")

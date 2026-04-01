@@ -1,0 +1,17 @@
+{% macro metric_card(value, label) %}
+    <div class="metric-container">
+        <p class="metric-value">{{ value }}</p>
+        <p class="metric-label">{{ label }}</p>
+    </div>
+{% endmacro %}
+
+{% macro profiling(profile_name, profile_description, profile_chart) %}
+    <section class="profiling-section">
+        <h2>{{ profile_name }}</h2>
+        <p class="profile_description">{{ profile_description }}</p>
+
+        <div class="profiling-chart">
+            {{ profile_chart | safe }}
+        </div>
+    </section>
+{% endmacro %}

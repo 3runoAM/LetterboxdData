@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Sua vibe atual</title>
+        <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
+              rel="stylesheet">
+    </head>
+    <body>
+        {% include "partials/nav.html" %}
+
+
+    </body>
+</html>

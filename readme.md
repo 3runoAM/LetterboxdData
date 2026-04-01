@@ -1,12 +1,12 @@
 # Letterboxd Data
 
 Este é um projeto acadêmico sem fins lucrativos, concebido como parte do **Projeto Supervisionado em Ciência de Dados** (cadeira de extensão).
-O **Letterboxd Data** objetiva ser um dashboard interativo focado no usuário comum da rede social Letterboxd, permitindo
+O **Letterboxd Data** objetiva ser um dashboard explanatório focado no usuário comum da rede social Letterboxd, permitindo
 a análise, visualização e recomendação de filmes a partir dos arquivos CSV exportados pela própria plataforma.
 Os dados gerados refletem comportamentos reais de consumo cultural, como o histórico de filmes assistidos, avaliações,
-listas e padrões temporais de uso. Através do upload desses dados, o sistema identifica padrões de comportamento e
-apresenta os resultados através de gráficos e métricas, oferecendo insights personalizados sobre o perfil cinematográfico
-do usuário e sugerindo filmes que combinem com o seu perfil.
+listas e padrões temporais de uso. Através do upload desses dados, o sistema os enriquece com ajuda de uma API externa,
+identifica padrões de comportamento e apresenta os resultados através de gráficos e métricas, oferecendo insights 
+personalizados sobre o perfil cinematográfico do usuário, além de sugerir filmes que combinem com o seu perfil.
 
 ### DESIGN E PROTOTIPAGEM
 
