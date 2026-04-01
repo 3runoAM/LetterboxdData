@@ -1,0 +1,33 @@
+:root {
+    --primary-color: #00d94f;
+    --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
+    --text-primary: #ebeff2;
+    --text-secondary: #A9BBCC;
+    --background-primary: #202830;
+    --background-secondary: #14181c;
+
+    /*Fontes*/
+    --graphik: 'Graphik', sans-serif;
+    --libre-caslon: "Libre Caslon Text", sans-serif;
+    --yantramanav: "Yantramanav", sans-serif;
+    --geologica: "Geologica", sans-serif;
+
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.logo-cont {
+    font: 800 3.7rem var(--graphik);
+    position: absolute;
+    right: 1rem;
+    top: 1.8rem;
+    color: #ebeff2;
+}
+
+.logo-filler {
+    width: 9.3rem;
+}

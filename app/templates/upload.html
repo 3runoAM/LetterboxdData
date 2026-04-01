@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <title>Letterboxd Data</title>
+        <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/logoInicial.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="main-container">
+            <section class="upper-section">
+                {% include "partials/logo.html" %}
+                <div class="hero-section">
+                    <img src="{{ url_for('static', filename='images/hero.png') }}" alt="hero" class="hero-image">
+                    <span class="hero-filler"></span>
+                    <div class="hero-text-container">
+                        <p>“Conhecer a si mesmo é o começo de toda a sabedoria”</p>
+                        <p>—Aristóteles</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="lower-section">
+                <div class="description-text-container">
+                    <p>Conheça os seus gostos.</p>
+                    <p> Receba sugestões baseadas nas suas preferências.</p>
+                    <p>Avalie as sugestões para melhorá-las.</p>
+                </div>
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div id="feedbackContainer">
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+               <form id="uploadForm" action="/saveFiles" method="POST" enctype="multipart/form-data">
+                    <button type="button" id="sendButton">Envie os arquivos CSV</button>
+                    <input id="inputFile" name="files" type="file" accept="text/csv" multiple>
+               </form>
+            </section>
+        </div>
+        <script src="{{ url_for('static', filename='javascript/uploader.js') }}"></script>
+    </body>
+</html>

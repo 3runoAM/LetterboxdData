@@ -1,46 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Data Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <title>Seu perfil cinéfilo</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
           rel="stylesheet">
 </head>
     <body>
-        <h1>Letterboxd Data Dashboard</h1>
+        {% include "partials/nav.html" %}
 
         <div class="container">
             <section class="metrics-section">
-                <div class="metric-container">
-                    <p class="metric-value">{{ context.total_movies }}</p>
-                    <p class="metric-label">Filmes Assistidos</p>
-                </div>
-                <div class="metric-container">
-                    <p class="metric-value">{{ context.favorite_day }}</p>
-                    <p class="metric-label">Dia de Cinema</p>
-                </div>
-                <div class="metric-container">
-                    <p class="metric-value">{{ context.favorite_decade }}</p>
-                    <p class="metric-label">Sua Década Favorita</p>
-                </div>
-                <div class="metric-container">
-                    <p class="metric-value">{{ context.average_rating }}</p>
-                    <p class="metric-label">Média de avaliações</p>
-                </div>
+                {% from "partials/macros.html" import metric_card %}
+
+                {% for metric in context.metric_list %}
+                    {{ metric_card(metric.value, metric.label) }}
+                {% endfor %}
             </section>
 
             <div class="first-charts-container">
-                <section class="rewatch-section">
-                    <h2>{{ context.rewatch_profile }}</h2>
-                    <p class="hero-title">{{ context.hero_title }}</p>
+                {% from "partials/macros.html" import profiling %}
 
-                    <div class="rewatch-card">
-                        {{ rewatch_rate | safe }}
-                    </div>
-                </section>
+                {{ profiling(context.rewatch_profile, context.rewatch_description, rewatch_rate) }}
 
                 <div class="vertical-separator"></div>
 

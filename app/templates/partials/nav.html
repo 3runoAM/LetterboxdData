@@ -1,0 +1,20 @@
+<nav>
+    <div class="nav-section">
+        <a href="{{ url_for("main.perfil_route") }}">
+            {% include "partials/logo.html" %}
+        </a>
+
+        <ul class="link-section">
+            <li>
+                <a href="{{ url_for("main.perfil_route") }}" class="{{ "active" if request.endpoint == "main.perfil_route" else "" }}">
+                    Perfil Cinéfilo
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for("main.perfil_atual") }}" class="{{ "active" if request.endpoint == "main.perfil_atual" else "" }}">
+                    Vibe Atual
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

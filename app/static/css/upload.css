@@ -4,6 +4,7 @@
     --text-primary: #ebeff2;
     --text-secondary: #A9BBCC;
     --background-primary: #202830;
+    --background-secondary: #14181c;
 
     /*Fontes*/
     --graphik: 'Graphik', sans-serif;
@@ -13,31 +14,27 @@
 
 }
 
-body {
-    background:var(--background-gradient);
-    color: var(--text-primary);
-    font-family: var(--graphik);
+.main-container{
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 5rem;
+    gap: 1.5rem;
+    height: 100vh;
 }
 
-.upperSection {
+.upper-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-
 }
 
-.logoSection {
+.logo-section {
     display: flex;
     align-items: center;
     position: relative;
 }
 
-.logoCont {
+.logo-cont {
     font: 800 3.7rem var(--graphik);
     position: absolute;
     right: 1rem;
@@ -45,65 +42,63 @@ body {
     color: #ebeff2;
 }
 
-.logoFiller {
+.logo-filler {
     width: 9.3rem;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-.heroSection {
+.hero-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
 }
 
-.heroImage {
+.hero-image {
     width: 60rem;
     position: absolute;
     top: 3rem;
 }
 
-.heroFiller{
+.hero-filler{
     width: 50rem;
     height: 20rem;
 }
 
-.heroTextContainer {
+.hero-text-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     z-index: 5;
 }
 
-.heroTextContainer > p:first-child {
+.hero-text-container > p:first-child {
     font: 700 2.2rem var(--libre-caslon);
 }
 
-.heroTextContainer > p:last-child {
+.hero-text-container > p:last-child {
     font: 400 1.8rem var(--yantramanav);
     color: var(--text-secondary);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-.lowerSection {
+.lower-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3rem;
-    margin-bottom: 5%;
+    gap: 5rem;
 }
 
 
-.descriptionTextContainer{
+.description-text-container{
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 0.2rem;
+    gap: 0.5rem;
     font: 500 1.5rem var(--yantramanav);
     color: var(--text-secondary);
 }
