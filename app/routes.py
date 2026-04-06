@@ -1,10 +1,15 @@
+import os
+
+import pandas
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 
+from . import TMDB_Client
 from .feature_engine import get_context
 from .data_processing import process_diary, process_ratings, process_watched, get_processed_data
 from .file_handler import validate_files, save_files, is_data_available
 from .graph_builder import plot_favorite_day, plot_likeness_series, plot_rewatch_rate, \
     plot_time_lag, plot_rating_distribution, plot_favorite_decade
+from .TMDB_Client import TMDBClient
 
 main = Blueprint("main", __name__)
 
@@ -37,10 +42,18 @@ def save_files_route():
 def perfil_route():
     try:
         # PROCESSAMENTO E ENRIQUECIMENTO DOS DADOS
-        df_diary, df_rating, df_watched = get_processed_data()
+        df_diary, df_rating, df_watched, movies = get_processed_data()
+
+        client = TMDBClient(os.getenv("API_KEY"))
+
+        enrich_data = client.fetch_movies_parallel(movies)
+        df_enrich_data = pandas.DataFrame(enrich_data)
+
+        df_watched_enriched = df_watched.merge(df_enrich_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+        # df_watched_enriched.to_csv("app/static/df_watched.csv", index=False)
 
         # GERANDO INSIGHTS
-        context = get_context(df_watched, df_diary, df_rating)
+        context = get_context(df_watched, df_diary, df_rating, df_watched_enriched)
 
         # GERAÇÃO DOS GRÁFICOS COM PLOTLY
         favorite_day = plot_favorite_day(df_diary)
