@@ -1,7 +1,7 @@
 {% macro metric_card(value, label) %}
     <div class="metric-container">
-        <p class="metric-value">{{ value }}</p>
-        <p class="metric-label">{{ label }}</p>
+        <p class="metric-value">{{ value if value != None else "-"}}</p>
+        <p class="metric-label">{{ label  }}</p>
     </div>
 {% endmacro %}
 
