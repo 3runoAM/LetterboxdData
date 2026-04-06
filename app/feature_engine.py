@@ -1,13 +1,10 @@
 import pandas
 
-
 def get_total_movies(df_watched):
-    return df_watched['Letterboxd URI'].nunique()
-
+    return df_watched.shape[0]
 
 def get_average_rating(df_rating):
     return round(df_rating['Rating'].mean(), 1)
-
 
 def get_longest_streak(df_diary):
     dates = df_diary['Watched Date'].drop_duplicates().sort_values(ignore_index=True)
@@ -69,19 +66,15 @@ def get_favorite_decade(df_ratings):
         Media=("Rating", "mean"),
         Contagem=("Rating", "count")
     )
+
     valid_decades = decades[decades["Contagem"] >= 5]
 
     if valid_decades.empty:
         return {
-            "favorite_decade": "Estamos descobrindo seu gosto... Avalie mais filmes para revelar sua década de ouro!",
-            "top_movies_str": ""
+            "favorite_decade": None,
         }
 
     favorite_decade = valid_decades["Media"].idxmax()
-    movies_from_fave_decade = df_ratings[df_ratings["Decade"] == favorite_decade]
-    top_movies_from_fave_decade = movies_from_fave_decade.sort_values(by="Rating", ascending=False).head(3)
-    top_movies_list = top_movies_from_fave_decade["Name"].tolist()
-    top_movies_str = _format_top_movies(top_movies_list)
 
     return favorite_decade
 
@@ -109,7 +102,7 @@ def get_rewatch_profile(df_diary):
     }
 
 
-def get_context(df_watched, df_diary, df_ratings):
+def get_context(df_watched, df_diary, df_ratings, df_watched_enriched):
     total_movies = {"label": "Filmes Assistidos", "value": get_total_movies(df_watched)}
     favorite_day = {"label": "Dia de cinema", "value": get_favorite_day(df_diary)}
     favorite_decade = {"label": "Década favorita", "value": get_favorite_decade(df_ratings)}
