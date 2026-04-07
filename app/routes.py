@@ -46,11 +46,15 @@ def perfil_route():
 
         client = TMDBClient(os.getenv("API_KEY"))
 
-        enrich_data = client.fetch_movies_parallel(movies)
-        df_enrich_data = pandas.DataFrame(enrich_data)
+        enriched_data = client.fetch_movies_parallel(movies)
+        df_enriched_data = pandas.DataFrame(enriched_data)
 
-        df_watched_enriched = df_watched.merge(df_enrich_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
-        # df_watched_enriched.to_csv("app/static/df_watched.csv", index=False)
+        df_watched_enriched = df_watched.merge(df_enriched_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+
+        # df_diary.to_csv("data/dataFrames/df_diary.csv", index=False)
+        # df_rating.to_csv("data/dataFrames/df_rating.csv", index=False)
+        # df_watched.to_csv("data/dataFrames/df_watched.csv", index=False)
+        # df_watched_enriched.to_csv("data/dataFrames/df_watched_enriched.csv", index=False)
 
         # GERANDO INSIGHTS
         context = get_context(df_watched, df_diary, df_rating, df_watched_enriched)
