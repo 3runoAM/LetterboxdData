@@ -36,7 +36,6 @@ def get_longest_streak(df_diary):
         "end": format_date_pt(longest['max'])
     }
 
-
 def get_favorite_day(df_diary):
     days_ptbr = {
         "Monday": "Segunda-feira",
@@ -52,14 +51,12 @@ def get_favorite_day(df_diary):
 
     return days_ptbr.get(favorite_day_en, favorite_day_en)
 
-
 def _format_top_movies(top_movies_list):
     if len(top_movies_list) > 1:
         return ", ".join(top_movies_list[:-1]) + " e " + top_movies_list[-1]
     elif len(top_movies_list) == 1:
         return top_movies_list[0]
     return ""
-
 
 def get_favorite_decade(df_ratings):
     decades = df_ratings.groupby("Decade").agg(
@@ -70,9 +67,7 @@ def get_favorite_decade(df_ratings):
     valid_decades = decades[decades["Contagem"] >= 5]
 
     if valid_decades.empty:
-        return {
-            "favorite_decade": None,
-        }
+        return None
 
     favorite_decade = valid_decades["Media"].idxmax()
 
@@ -101,14 +96,31 @@ def get_rewatch_profile(df_diary):
         "rewatch_description": rewatch_description
     }
 
+def get_favorite_genre(df_watched_enriched):
+    common_genres = df_watched_enriched["Genres"].str.split(',').explode().str.strip()
+
+    if not common_genres.empty:
+        return common_genres.value_counts().index[0]
+
+    return None
+
+def get_favorite_director(df_watched_enriched):
+    common_directors = df_watched_enriched["Directors"].str.split(',').explode().str.strip()
+
+    if not common_directors.empty:
+        return common_directors.value_counts().index[0]
+
+    return None
 
 def get_context(df_watched, df_diary, df_ratings, df_watched_enriched):
     total_movies = {"label": "Filmes Assistidos", "value": get_total_movies(df_watched)}
     favorite_day = {"label": "Dia de cinema", "value": get_favorite_day(df_diary)}
     favorite_decade = {"label": "Década favorita", "value": get_favorite_decade(df_ratings)}
     average_rating = {"label": "Média de avaliação", "value": get_average_rating(df_ratings)}
+    favorite_genre = {"label": "Gênero favorito", "value": get_favorite_genre(df_watched_enriched)}
+    favorite_director = {"label": "Diretor Favorito", "value": get_favorite_director(df_watched_enriched)}
 
-    metric_list = [total_movies, favorite_day, favorite_decade, average_rating]
+    metric_list = [total_movies, favorite_day, favorite_decade, average_rating, favorite_genre, favorite_director]
 
     longest_streak = get_longest_streak(df_diary)
     rewatch_context = get_rewatch_profile(df_diary)
