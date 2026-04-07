@@ -15,3 +15,24 @@
         </div>
     </section>
 {% endmacro %}
+
+{% macro movie_list(label, movies) %}
+    <section class="movie-section">
+
+        <h2 class="label-list">{{ label }}</h2>
+        <span class="horizontal-line"></span>
+
+        <ol class="movie-list">
+            {% for movie in movies %}
+                <li>
+                    <div>
+                        <img src="{{ movie.Poster }}" alt="{{ movie.name }} poster" width="200">
+                        <h3>{{ movie.Name }}</h3>
+                        <p>{{ movie.Year }}</p>
+                    </div>
+                    <p>{{ movie.Rating }}</p>
+                </li>
+            {% endfor %}
+        </ol>
+    </section>
+{% endmacro %}
