@@ -40,14 +40,14 @@
 }
 
 .metric-value {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: bold;
     color: var(--text-primary);
     text-shadow: 0 0 0.2rem var(--secondary-color);
 }
 
 .metric-label {
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -56,7 +56,7 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-.first-charts-container {
+.chart-container {
     width: 100%;
     height: contain;
     display: flex;

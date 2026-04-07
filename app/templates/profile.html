@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movie-list.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
@@ -15,24 +16,36 @@
     <body>
         {% include "partials/nav.html" %}
 
-        <div class="container">
-            <section class="metrics-section">
+        <section class="metrics-section">
                 {% from "partials/macros.html" import metric_card %}
 
                 {% for metric in context.metric_list %}
                     {{ metric_card(metric.value, metric.label) }}
                 {% endfor %}
-            </section>
+        </section>
 
-            <div class="first-charts-container">
-                {% from "partials/macros.html" import profiling %}
+        <main class="container">
+            <div class="chart-container">
+                <section>
+                    <div>
+                        {% from "partials/macros.html" import profiling %}
 
-                {{ profiling(context.rewatch_profile, context.rewatch_description, rewatch_rate) }}
+                        {{ profiling(context.rewatch_context.rewatch_profile,
+                                    context.rewatch_context.rewatch_description,
+                                     rewatch_rate) }}
+                    </div>
+                </section>
 
-                <div class="vertical-separator"></div>
+                <div>
+                    {% from "partials/macros.html" import movie_list %}
 
+                    {{ movie_list("Reassistidos", context.rewatch_context.rewatched_movies) }}
+                </div>
+
+            </div>
+
+            <div class="chart-container">
                 <section class="streak-section">
-
                     <div class="circle-container">
                         <div class="central-text">
                             {% if context.longest_streak.days > 1 %}
@@ -58,30 +71,13 @@
                         {% endif %}
                     </div>
                 </section>
-            </div>
 
+                <div>
+                    {% from "partials/macros.html" import movie_list %}
 
-            <div class="graphic-dashboard">
-                <div class="grafico-card">
-                    {{ favorite_day | safe }}
-                </div>
-
-                <div class="grafico-card">
-                    {{ likeness_series | safe }}
-                </div>
-
-                <div class="grafico-card">
-                    {{ time_lag | safe }}
-                </div>
-
-                <div class="grafico-card">
-                    {{ rating_distribution | safe }}
-                </div>
-
-                <div class="grafico-card">
-                    {{ favorite_decade | safe }}
+                    {{ movie_list("Maratona", context.longest_streak.movies) }}
                 </div>
             </div>
-        </div>
+        </main>
     </body>
 </html>
