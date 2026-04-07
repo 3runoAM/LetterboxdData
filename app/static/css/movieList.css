@@ -1,0 +1,42 @@
+:root {
+    --primary-color: #00d94f;
+    --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
+    --text-primary: #ebeff2;
+    --text-secondary: #A9BBCC;
+    --background-primary: #202830;
+    --background-secondary: #14181c;
+
+    /*Fontes*/
+    --graphik: 'Graphik', sans-serif;
+    --libre-caslon: "Libre Caslon Text", sans-serif;
+    --yantramanav: "Yantramanav", sans-serif;
+    --geologica: "Geologica", sans-serif;
+}
+
+.movie-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 100%;
+}
+
+.label-list{
+    display: flex;
+    flex-direction: column;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.horizontal-line {
+    height: 2px;
+    width: 100%;
+    background-color: var(--text-primary);
+}
+
+.movie-list {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    overflow-x: auto;
+    width: 60rem;
+}

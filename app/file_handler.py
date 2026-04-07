@@ -45,3 +45,10 @@ def is_data_available():
         if not os.path.exists(os.path.join(DATA_DIR, filename)):
             return False
     return True
+
+def is_data_processed():
+    processed_files = ["df_diary.csv", "df_rating.csv", "df_watched.csv", "df_watched_enriched.csv"]
+    for filename in processed_files:
+        if not os.path.exists(os.path.join("data/dataFrames", filename)):
+            return False
+    return True
