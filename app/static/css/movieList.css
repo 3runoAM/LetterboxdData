@@ -1,7 +1,9 @@
 :root {
     --primary-color: #00d94f;
+    --secondary-color: #3fbcf2;
+    --accent-color: #fc7e00;
     --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
-    --text-primary: #ebeff2;
+    --text-primary: #edeff1;
     --text-secondary: #A9BBCC;
     --background-primary: #202830;
     --background-secondary: #14181c;
@@ -20,15 +22,17 @@
     max-width: 100%;
 }
 
-.label-list{
+.label-list {
     display: flex;
     flex-direction: column;
+    text-transform: uppercase;
+    font: thin 1rem var(--graphik);
     color: var(--text-primary);
     margin: 0;
 }
 
 .horizontal-line {
-    height: 2px;
+    height: 1px;
     width: 100%;
     background-color: var(--text-primary);
 }
@@ -38,5 +42,63 @@
     gap: 1rem;
     list-style: none;
     overflow-x: auto;
+    overflow-y: hidden;
     width: 60rem;
+}
+
+.movie-list::-webkit-scrollbar {
+    height: 5px;
+}
+
+.movie-list::-webkit-scrollbar-track {
+    background: var(--background-primary);
+    border-radius: 5rem;
+}
+
+.movie-list::-webkit-scrollbar-thumb {
+    background: var(--text-secondary);
+    border-radius: 5rem;
+}
+
+.movie-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+.movie-list > li {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    gap: 0.5rem;
+    height: 30rem;
+}
+
+.movie-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.movie-info > h3 {
+    font-size: 1rem;
+}
+
+.movie-info > * {
+    margin: 0;
+}
+
+.stars {
+    display: inline-block;
+    font-size: 1.5rem;
+    font-family: "SansSerif", serif;
+    line-height: 1;
+}
+
+.stars::before {
+    --percent: calc(var(--rating) / 5 * 100%);
+    content: '★★★★★';
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--primary-color) var(--percent), var(--background-primary) var(--percent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
