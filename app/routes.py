@@ -65,13 +65,17 @@ def perfil_route():
         # GERAÇÃO DOS GRÁFICOS COM PLOTLY
         rewatch_rate = plot_rewatch_rate(df_diary)
 
+        # likeness_series = plot_likeness_series(df_diary)
+        # time_lag = plot_time_lag(df_diary)
+        # rating_distribution = plot_rating_distribution(df_rating)
+        # favorite_decade = plot_favorite_decade(df_rating)
+        # favorite_day = plot_favorite_day(df_diary)
     except FileNotFoundError:
         flash("Nenhum arquivo encontrado. Faça o upload dos arquivos necessários")
         return redirect(url_for("main.main_route"))
     except Exception as e:
         print(f"Erro ao processar os dados: {e.with_traceback(e.__traceback__)}")
         return redirect(url_for("main.main_route"))
-
 
     return render_template("profile.html",
                            context=context,
