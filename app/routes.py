@@ -45,14 +45,14 @@ def perfil_route():
         df_diary, df_rating, df_watched, movies = get_processed_data()
 
         # ENRIQUECIMENTO
-        # client = TMDBClient(os.getenv("API_KEY"))
-        # enriched_data = client.fetch_movies_parallel(movies)
-
-        # df_enriched_data = pandas.DataFrame(enriched_data)
-
-        df_watched_enriched = pandas.read_csv(os.path.join("data/dataFrames", "df_watched_enriched.csv"))
-
-        # df_watched_enriched = df_watched.merge(df_enriched_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+        df_watched_enriched = None
+        if not is_data_processed():
+            client = TMDBClient(os.getenv("API_KEY"))
+            enriched_data = client.fetch_movies_parallel(movies)
+            df_enriched_data = pandas.DataFrame(enriched_data)
+            df_watched_enriched = df_watched.merge(df_enriched_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+        else:
+            df_watched_enriched = pandas.read_csv("data/dataFrames/df_watched_enriched.csv")
 
         # df_diary.to_csv("data/dataFrames/df_diary.csv", index=False)
         # df_rating.to_csv("data/dataFrames/df_rating.csv", index=False)
@@ -65,17 +65,13 @@ def perfil_route():
         # GERAÇÃO DOS GRÁFICOS COM PLOTLY
         rewatch_rate = plot_rewatch_rate(df_diary)
 
-        # likeness_series = plot_likeness_series(df_diary)
-        # time_lag = plot_time_lag(df_diary)
-        # rating_distribution = plot_rating_distribution(df_rating)
-        # favorite_decade = plot_favorite_decade(df_rating)
-        # favorite_day = plot_favorite_day(df_diary)
     except FileNotFoundError:
         flash("Nenhum arquivo encontrado. Faça o upload dos arquivos necessários")
         return redirect(url_for("main.main_route"))
     except Exception as e:
         print(f"Erro ao processar os dados: {e.with_traceback(e.__traceback__)}")
         return redirect(url_for("main.main_route"))
+
 
     return render_template("profile.html",
                            context=context,
@@ -86,3 +82,9 @@ def perfil_route():
 @main.route("/perfilAtual", methods=["GET"])
 def perfil_atual():
     return render_template("currentProfile.html")
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@main.route("/conquistas", methods=["GET"])
+def conquistas_route():
+    return render_template("badges.html")
