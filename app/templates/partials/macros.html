@@ -22,17 +22,21 @@
         <h2 class="label-list">{{ label }}</h2>
         <span class="horizontal-line"></span>
 
-        <ol class="movie-list">
-            {% for movie in movies %}
-                <li>
-                    <div>
+        {% if movies %}
+            <ol class="movie-list">
+                {% for movie in movies if movies %}
+                    <li>
                         <img src="{{ movie.Poster }}" alt="{{ movie.name }} poster" width="200">
-                        <h3>{{ movie.Name }}</h3>
-                        <p>{{ movie.Year }}</p>
-                    </div>
-                    <p>{{ movie.Rating }}</p>
-                </li>
-            {% endfor %}
-        </ol>
+                        <div class="movie-info">
+                            <h3>{{ movie.Name }}</h3>
+                            <p>{{ movie.Year }}</p>
+                            <div class="stars" style="--rating: {{ movie.Rating }};" aria-label="Nota: {{ movie.Rating }} de 5"></div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p class="no-movies">Nenhum filme por aqui</p>
+        {% endif %}
     </section>
 {% endmacro %}

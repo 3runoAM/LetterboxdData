@@ -1,6 +1,5 @@
 import requests
 import concurrent.futures
-from flask import request_started
 
 from app.config import TMDB_GENRES
 
@@ -15,7 +14,6 @@ class TMDBClient:
             "accept": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
-
 
     def fetch_movie_details(self, movie):
         try:
@@ -84,8 +82,8 @@ class TMDBClient:
 
     def fetch_movies_parallel(self, movie_list):
         results = []
-
         completed_tasks = {}
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for movie in movie_list:
                 task = executor.submit(self.fetch_movie_details, movie)

@@ -45,14 +45,14 @@ def perfil_route():
         df_diary, df_rating, df_watched, movies = get_processed_data()
 
         # ENRIQUECIMENTO
-        # client = TMDBClient(os.getenv("API_KEY"))
-        # enriched_data = client.fetch_movies_parallel(movies)
-
-        # df_enriched_data = pandas.DataFrame(enriched_data)
-
-        df_watched_enriched = pandas.read_csv(os.path.join("data/dataFrames", "df_watched_enriched.csv"))
-
-        # df_watched_enriched = df_watched.merge(df_enriched_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+        df_watched_enriched = None
+        if not is_data_processed():
+            client = TMDBClient(os.getenv("API_KEY"))
+            enriched_data = client.fetch_movies_parallel(movies)
+            df_enriched_data = pandas.DataFrame(enriched_data)
+            df_watched_enriched = df_watched.merge(df_enriched_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+        else:
+            df_watched_enriched = pandas.read_csv("data/dataFrames/df_watched_enriched.csv")
 
         # df_diary.to_csv("data/dataFrames/df_diary.csv", index=False)
         # df_rating.to_csv("data/dataFrames/df_rating.csv", index=False)
@@ -86,3 +86,9 @@ def perfil_route():
 @main.route("/perfilAtual", methods=["GET"])
 def perfil_atual():
     return render_template("currentProfile.html")
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@main.route("/conquistas", methods=["GET"])
+def conquistas_route():
+    return render_template("badges.html")

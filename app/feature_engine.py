@@ -30,14 +30,16 @@ def get_longest_streak(df_diary, df_watched_enriched):
             return None
         return f"{date_obj.day} de {meses_pt[date_obj.month]} de {date_obj.year}"
 
-    streak_mask = (df_diary["Watched Date"] >= longest["min"]) & (df_diary["Watched Date"] <= longest["max"])
-    df_streak_movies = df_diary[streak_mask]
+    streak_movies = None
+    if df_watched_enriched is not None:
+        streak_mask = (df_diary["Watched Date"] >= longest["min"]) & (df_diary["Watched Date"] <= longest["max"])
+        df_streak_movies = df_diary[streak_mask]
 
-    df_streak_movies = pandas.merge(df_streak_movies, df_watched_enriched[["Name", "Year", "Poster"]],
-                                    on=["Name", "Year"], how="left").sort_values(by="Rating", ascending=False)
+        df_streak_movies = pandas.merge(df_streak_movies, df_watched_enriched[["Name", "Year", "Poster"]],
+                                        on=["Name", "Year"], how="left").sort_values(by="Rating", ascending=False)
 
 
-    streak_movies= df_streak_movies[["Name", "Year", "Poster", "Rating"]].to_dict(orient='records')
+        streak_movies = df_streak_movies[["Name", "Year", "Poster", "Rating"]].to_dict(orient='records')
 
     return {
         "days": int(longest["count"]),
@@ -95,21 +97,21 @@ def get_rewatch_context(df_diary, df_watched_enriched):
         rewatch_description = f"Você reassistiu filmes {taxa_rewatch:.1f}% das vezes! Reprise é uma palavra que não existe no seu dicionário."
 
     #-----------------------------------------------------
-    df_rewatch = df_diary[df_diary['Rewatch'] == True]
+        rewatched_movies = None
+        if df_watched_enriched is not None:
+            df_rewatch = df_diary[df_diary['Rewatch'] == True]
 
-    if df_rewatch.empty:
-        return []
+            if df_rewatch.empty:
+                return []
 
-    df_movies_rewatch = pandas.merge(
-        df_rewatch,
-        df_watched_enriched[['Name', 'Year', 'Poster']],
-        on=['Name', 'Year'],
-        how='left'
-    ).sort_values(by='Rating', ascending=False)
+            df_movies_rewatch = pandas.merge(
+                df_rewatch,
+                df_watched_enriched[['Name', 'Year', 'Poster']],
+                on=['Name', 'Year'],
+                how='left'
+            ).sort_values(by='Rating', ascending=False)
 
-    rewatched_movies = df_movies_rewatch[['Name', "Year", 'Poster', 'Rating']].to_dict(orient='records')
-
-    print(rewatched_movies)
+            rewatched_movies = df_movies_rewatch[['Name', "Year", 'Poster', 'Rating']].to_dict(orient='records')
 
     return {
         "rewatch_profile": rewatch_profile,
@@ -118,22 +120,27 @@ def get_rewatch_context(df_diary, df_watched_enriched):
     }
 
 def get_favorite_genre(df_watched_enriched):
-    common_genres = df_watched_enriched["Genres"].str.split(",").explode().str.strip()
+    if df_watched_enriched is not None:
+        common_genres = df_watched_enriched["Genres"].str.split(",").explode().str.strip()
 
-    if not common_genres.empty:
-        return common_genres.value_counts().index[0]
+        if not common_genres.empty:
+            return common_genres.value_counts().index[0]
 
-    return None
+        return None
+    else:
+        return None
 
 def get_favorite_director(df_watched_enriched):
-    common_directors = df_watched_enriched["Directors"].str.split(",").explode().str.strip()
+    if df_watched_enriched is not None:
+        common_directors = df_watched_enriched["Directors"].str.split(",").explode().str.strip()
 
-    if not common_directors.empty:
-        return common_directors.value_counts().index[0]
+        if not common_directors.empty:
+            return common_directors.value_counts().index[0]
+        return None
+    else:
+        return None
 
-    return None
-
-def get_context(df_watched, df_diary, df_ratings, df_watched_enriched):
+def get_context(df_watched, df_diary, df_ratings, df_watched_enriched=None):
     total_movies = {"label": "Filmes Assistidos", "value": get_total_movies(df_watched)}
     favorite_day = {"label": "Dia de cinema", "value": get_favorite_day(df_diary)}
     favorite_decade = {"label": "Década favorita", "value": get_favorite_decade(df_ratings)}
