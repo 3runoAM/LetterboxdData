@@ -15,6 +15,11 @@
                     Vibe Atual
                 </a>
             </li>
+            <li>
+                <a href="{{ url_for("main.conquistas_route") }}" class="{{ "active" if request.endpoint == "main.conquistas_route" else "" }}">
+                    Conquistas
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

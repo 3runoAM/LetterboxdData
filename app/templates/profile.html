@@ -25,15 +25,12 @@
                 {% endfor %}
             </section>
 
-
             <div class="chart-container">
                 {% from "partials/macros.html" import profiling %}
 
                 {{ profiling(context.rewatch_context.rewatch_profile,
                             context.rewatch_context.rewatch_description,
                              rewatch_rate) }}
-
-
 
                 {% from "partials/macros.html" import movie_list %}
 
