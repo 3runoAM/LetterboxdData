@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Seu perfil cinéfilo</title>
-    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/movieList.css') }}">
+    <link rel="icon" href="{{ url_for("static", filename="images/favicon.png") }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/profile.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/wordcloud.css") }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
@@ -25,7 +26,7 @@
                 {% endfor %}
             </section>
 
-            <div class="chart-container">
+            <div class="chart-container rewatch">
                 {% from "partials/macros.html" import profiling %}
 
                 {{ profiling(context.rewatch_context.rewatch_profile,
@@ -34,18 +35,26 @@
 
                 {% from "partials/macros.html" import movie_list %}
 
-                {{ movie_list("Reassistidos", context.rewatch_context.rewatched_movies) }}
+                {{ movie_list("Reassistidos", context.rewatch_context.rewatched_movies, "rewatch") }}
             </div>
 
-            <div class="chart-container">
-                {{ movie_list("Maratona", context.longest_streak.movies) }}
+            <section class="chart-container word-cloud">
+                <h2>Temas recorrentes nos seus filmes</h2>
+                <span class="horizontal-line word-cloud"></span>
+
+                <img src="{{ url_for("static", filename="images/overview_cloud.png") }}"
+                     alt="Most common overview word cloud" class="wordcloud-image">
+            </section>
+
+            <div class="chart-container streak">
+                {{ movie_list("Maratona", context.streak_context.movies, "streak") }}
 
                 <section class="streak-section">
                     <div class="circle-container">
                         <div class="central-text">
-                            {% if context.longest_streak.days > 1 %}
+                            {% if context.streak_context.days > 1 %}
                                 <div class="streak-container">
-                                    <h2>{{ context.longest_streak.days }}</h2>
+                                    <h2>{{ context.streak_context.days }}</h2>
                                     <h3>dias</h3>
                                 </div>
                             {% else %}
@@ -58,9 +67,9 @@
                     </div>
 
                     <div class="streak-details">
-                        {% if context.longest_streak.days > 1 %}
+                        {% if context.streak_context.days > 1 %}
                             <p class="streak-title">Maratona mais duradoura</p>
-                            <p>{{ context.longest_streak.start }} à {{ context.longest_streak.end }}</p>
+                            <p>{{ context.streak_context.start }} à {{ context.streak_context.end }}</p>
                         {% else %}
                             <p class="streak-title">Assista filmes todos os dias para começar uma maratona</p>
                         {% endif %}
