@@ -6,7 +6,7 @@ def get_total_movies(df_watched):
 def get_average_rating(df_rating):
     return round(df_rating["Rating"].mean(), 1)
 
-def get_longest_streak(df_diary, df_watched_enriched):
+def get_streak_context(df_diary, df_watched_enriched):
     dates = df_diary["Watched Date"].drop_duplicates().sort_values(ignore_index=True)
 
     if dates.empty:
@@ -150,11 +150,11 @@ def get_context(df_watched, df_diary, df_ratings, df_watched_enriched=None):
 
     metric_list = [total_movies, favorite_day, favorite_decade, average_rating, favorite_genre, favorite_director]
 
-    longest_streak = get_longest_streak(df_diary, df_watched_enriched)
+    streak_context = get_streak_context(df_diary, df_watched_enriched)
     rewatch_context = get_rewatch_context(df_diary, df_watched_enriched)
 
     return {
         "metric_list": metric_list,
-        "longest_streak": longest_streak,
+        "streak_context": streak_context,
         "rewatch_context": rewatch_context
     }
