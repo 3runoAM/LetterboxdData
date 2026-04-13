@@ -1,7 +1,7 @@
 :root {
     --primary-color: #00d94f;
     --secondary-color: #3fbcf2;
-    --accent-color:  #fc7e00;
+    --accent-color: #fc7e00;
     --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
     --text-primary: #edeff1;
     --text-secondary: #A9BBCC;
@@ -14,6 +14,11 @@
     --yantramanav: "Yantramanav", sans-serif;
     --geologica: "Geologica", sans-serif;
 
+}
+
+html {
+    scroll-behavior: smooth;
+    image-rendering: smooth;
 }
 
 .nav-section {

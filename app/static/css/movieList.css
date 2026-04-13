@@ -31,7 +31,7 @@
     margin: 0;
 }
 
-.horizontal-line {
+.horizontal-line-movie {
     height: 1px;
     width: 100%;
     background-color: var(--text-primary);
@@ -64,13 +64,19 @@
     background: var(--accent-color);
 }
 
+.movie-list.rewatch{
+    width: 60rem;
+}
+
+.movie-list.streak {
+    width: 66rem;
+}
+
 .movie-list > li {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-
-    gap: 0.5rem;
-    height: 30rem;
+    height: 28rem;
 }
 
 .movie-info {
@@ -81,6 +87,7 @@
 
 .movie-info > h3 {
     font-size: 1rem;
+    text-align: center;
 }
 
 .movie-info > * {

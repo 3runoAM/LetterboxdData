@@ -19,7 +19,7 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: 5rem;
+    gap: 6.5rem;
     border-radius: 12px;
     text-align: center;
     margin-bottom: 2rem;
@@ -32,7 +32,7 @@
     justify-content: center;
     gap: 4rem;
     flex-wrap: wrap;
-    margin-top: 2rem;
+    margin-top: 4rem;
     padding: 1.5rem;
 }
 
@@ -43,14 +43,14 @@
 }
 
 .metric-value {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-weight: bold;
     color: var(--text-primary);
     text-shadow: 0 0 0.2rem var(--secondary-color);
 }
 
 .metric-label {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -64,10 +64,12 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    gap: 8%
 }
 
 /*---REWATCH----------------------------------------------------------------------------------------------------------*/
+.chart-container.rewatch{
+    gap: 8%;
+}
 
 .profiling-section {
     display: flex;
@@ -76,6 +78,10 @@
     align-items: center;
     gap: 1.2rem;
     max-width: 25%;
+}
+
+.profiling-section > h2 {
+    margin: 0;
 }
 
 .profile_description {
@@ -102,12 +108,16 @@
 
 /*---STREAK----------------------------------------------------------------------------------------------------------*/
 
+.chart-container.streak {
+    gap: 2%;
+}
+
 .streak-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2rem;
-    max-width: 25%;
+    width: 36rem;
 }
 
 .circle-container {
@@ -166,6 +176,10 @@
     text-transform: uppercase;
     font-weight: lighter;
     letter-spacing: 1px;
+}
+
+.streak-title ~ p {
+    text-align: center;
 }
 
 /*-----GRÁFICOS---------------------------------------------------------------------------------------------------------------*/
