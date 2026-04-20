@@ -11,10 +11,10 @@ main = Blueprint("main", __name__)
 
 @main.route("/", methods=["GET"])
 def main_route():
-    if is_data_available() or is_data_processed():
-        return redirect(url_for("main.perfil_route"))
-    else:
+    if not is_data_available() or not is_data_processed():
         return render_template("upload.html")
+    else:
+        return redirect(url_for("main.perfil_route"))
 
 # -----------------------------------------------------------------------------------------------------------------------
 
@@ -28,41 +28,47 @@ def save_files_route():
         return redirect(url_for("main.main_route"))
 
     save_files(files)
+    return render_template("loading.html")
 
-    flash("Arquivos salvos com sucesso")
-    return redirect(url_for("main.perfil_route"))
+# -----------------------------------------------------------------------------------------------------------------------
 
+@main.route("/api/process-data", methods=["POST"])
+def process_data():
+    try:
+        df_diary, df_rating, df_watched, movies = get_processed_data()
+
+        client = TMDBClient(os.getenv("API_KEY"))
+        enriched_data = client.fetch_movies_parallel(movies)
+
+        df_enriched = pandas.DataFrame(enriched_data)
+        df_watched_enriched = df_watched.merge(df_enriched, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+
+        df_diary.to_csv("data/dataFrames/df_diary.csv", index=False)
+        df_rating.to_csv("data/dataFrames/df_rating.csv", index=False)
+        df_watched.to_csv("data/dataFrames/df_watched.csv", index=False)
+        df_watched_enriched.to_csv("data/dataFrames/df_watched_enriched.csv", index=False)
+
+        plot_overview_wordcloud(df_watched_enriched)
+
+        return {"status": "success"}, 200
+    except Exception as e:
+        print(f"Erro no processamento: {e}")
+        return {"status": "error", "message": str(e)}, 500
 # -----------------------------------------------------------------------------------------------------------------------
 
 @main.route("/perfil", methods=["GET"])
 def perfil_route():
     try:
-        # PROCESSAMENTO
-        df_diary, df_rating, df_watched, movies = get_processed_data()
-
-        # ENRIQUECIMENTO
-        df_watched_enriched = None
         if not is_data_processed():
-            client = TMDBClient(os.getenv("API_KEY"))
-            enriched_data = client.fetch_movies_parallel(movies)
-            df_enriched_data = pandas.DataFrame(enriched_data)
-            df_watched_enriched = df_watched.merge(df_enriched_data, how="left", on=["Name", "Year"]).dropna(subset="Genres")
-        else:
-            df_watched_enriched = pandas.read_csv("data/dataFrames/df_watched_enriched.csv")
+            return redirect(url_for("main.main_route"))
 
-        # df_diary.to_csv("data/dataFrames/df_diary.csv", index=False)
-        # df_rating.to_csv("data/dataFrames/df_rating.csv", index=False)
-        # df_watched.to_csv("data/dataFrames/df_watched.csv", index=False)
-        # df_watched_enriched.to_csv("data/dataFrames/df_watched_enriched.csv", index=False)
+        df_diary = pandas.read_csv("data/dataFrames/df_diary.csv", parse_dates=["Date", "Watched Date"])
+        df_rating = pandas.read_csv("data/dataFrames/df_rating.csv", parse_dates=["Date"])
+        df_watched = pandas.read_csv("data/dataFrames/df_watched.csv", parse_dates=["Date"])
+        df_watched_enriched = pandas.read_csv("data/dataFrames/df_watched_enriched.csv", parse_dates=["Date"])
 
-        # GERANDO CONTEXTO
         context = get_context(df_watched, df_diary, df_rating, df_watched_enriched)
-
-        # GERAÇÃO DE GRÁFICOS E IMAGENS
         rewatch_rate = plot_rewatch_rate(df_diary)
-        if not os.path.exists("app/static/images/overview_cloud.png"):
-            plot_overview_wordcloud(df_watched_enriched)
-
     except FileNotFoundError:
         flash("Nenhum arquivo encontrado. Faça o upload dos arquivos necessários")
         return redirect(url_for("main.main_route"))
@@ -70,10 +76,8 @@ def perfil_route():
         print(f"Erro ao processar os dados: {e.with_traceback(e.__traceback__)}")
         return redirect(url_for("main.main_route"))
 
-    return render_template("profile.html",
-                           context=context,
-                           rewatch_rate=rewatch_rate)
 
+    return render_template("profile.html", context=context, rewatch_rate=rewatch_rate)
 
 # -----------------------------------------------------------------------------------------------------------------------
 

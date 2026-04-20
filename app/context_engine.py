@@ -38,7 +38,6 @@ def get_streak_context(df_diary, df_watched_enriched):
         df_streak_movies = pandas.merge(df_streak_movies, df_watched_enriched[["Name", "Year", "Poster"]],
                                         on=["Name", "Year"], how="left").sort_values(by="Rating", ascending=False)
 
-
         streak_movies = df_streak_movies[["Name", "Year", "Poster", "Rating"]].to_dict(orient='records')
 
     return {
@@ -96,22 +95,18 @@ def get_rewatch_context(df_diary, df_watched_enriched):
         rewatch_profile = "Caçador de Inéditos"
         rewatch_description = f"Você reassistiu filmes {taxa_rewatch:.1f}% das vezes! Reprise é uma palavra que não existe no seu dicionário."
 
-    #-----------------------------------------------------
-        rewatched_movies = None
-        if df_watched_enriched is not None:
-            df_rewatch = df_diary[df_diary['Rewatch'] == True]
+    #------------------------------------------------------------------
+    rewatched_movies = None
+    if df_watched_enriched is not None:
+        df_rewatch = df_diary[df_diary['Rewatch'] == True]
 
-            if df_rewatch.empty:
-                return []
+        if df_rewatch.empty:
+            return []
 
-            df_movies_rewatch = pandas.merge(
-                df_rewatch,
-                df_watched_enriched[['Name', 'Year', 'Poster']],
-                on=['Name', 'Year'],
-                how='left'
-            ).sort_values(by='Rating', ascending=False)
+        df_movies_rewatch = pandas.merge(df_rewatch, df_watched_enriched[['Name', 'Year', 'Poster']],
+                                         on=['Name', 'Year'], how='left').sort_values(by='Rating', ascending=False)
 
-            rewatched_movies = df_movies_rewatch[['Name', "Year", 'Poster', 'Rating']].to_dict(orient='records')
+        rewatched_movies = df_movies_rewatch[['Name', "Year", 'Poster', 'Rating']].to_dict(orient='records')
 
     return {
         "rewatch_profile": rewatch_profile,
