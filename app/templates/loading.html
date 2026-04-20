@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <title>Letterboxd Data</title>
+        <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/initialLogo.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
+              rel="stylesheet">
+    </head>
+    <body>
+        {% include "partials/logo.html" %}
+
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <h2>Construindo seu perfil cinéfilo...</h2>
+            <br>
+            <p>Estamos validando os arquivos, tratando as informações e enriquecendo os dados com a TMDB  API</p>
+            <br>
+            <p>Quanto mais filmes você tiver, mais essa etapa pode demorar, mas é importante que não saia da página</p>
+        </div>
+
+        <script src="{{ url_for('static', filename='javascript/loading.js') }}"></script>
+    </body>
+</html>

@@ -1,4 +1,3 @@
-import csv
 import os
 import pandas
 from .config import DATA_DIR, BASE_DIR
