@@ -26,9 +26,9 @@
             <ol class="movie-list {{ id_class }}">
                 {% for movie in movies if movies %}
                     <li>
-                        <img src="{{ movie.Poster }}" alt="{{ movie.name }} poster" width="180">
+                        <img src="{{ movie.Poster }}" alt="{{ movie.Name }} poster" title="{{ movie.Name }}">
                         <div class="movie-info">
-                            <h3>{{ movie.Name }}</h3>
+                            <h3 title="{{ movie.Name }}">{{ movie.Name }}</h3>
                             <p>{{ movie.Year }}</p>
                             <div class="stars" style="--rating: {{ movie.Rating }};" aria-label="Nota: {{ movie.Rating }} de 5" title="{{ movie.Rating }}"></div>
                         </div>

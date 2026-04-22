@@ -190,3 +190,29 @@
     justify-content: center;
     gap: 1rem;
 }
+
+.chart-container.movie-map {
+    flex-direction: column;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.8rem;
+    font-family: var(--geologica);
+    font-weight: lighter;
+    text-transform: uppercase;
+}
+
+.chart-container.movie-map > h3 {
+    font-family: var(--geologica);
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.chart-container.movie-map > div {
+    width: 60rem;
+    height: 30rem;
+}

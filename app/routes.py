@@ -4,7 +4,7 @@ from flask import Blueprint, request, render_template, flash, redirect, url_for
 from .context_engine import get_context
 from .data_processing import process_diary, process_ratings, process_watched, get_processed_data
 from .file_handler import validate_files, save_files, is_data_available, is_data_processed
-from .graph_builder import plot_rewatch_rate, plot_overview_wordcloud
+from .graph_builder import plot_rewatch_rate, plot_overview_wordcloud, plot_movie_map
 from .TMDB_Client import TMDBClient
 
 main = Blueprint("main", __name__)
@@ -68,7 +68,12 @@ def perfil_route():
         df_watched_enriched = pandas.read_csv("data/dataFrames/df_watched_enriched.csv", parse_dates=["Date"])
 
         context = get_context(df_watched, df_diary, df_rating, df_watched_enriched)
-        rewatch_rate = plot_rewatch_rate(df_diary)
+        rewatch_rate_graph = plot_rewatch_rate(df_diary)
+        movie_map_graph = plot_movie_map(df_watched_enriched)
+
+        return render_template("profile.html", context=context, rewatch_rate=rewatch_rate_graph,
+                               movie_map=movie_map_graph)
+
     except FileNotFoundError:
         flash("Nenhum arquivo encontrado. Faça o upload dos arquivos necessários")
         return redirect(url_for("main.main_route"))
@@ -77,7 +82,6 @@ def perfil_route():
         return redirect(url_for("main.main_route"))
 
 
-    return render_template("profile.html", context=context, rewatch_rate=rewatch_rate)
 
 # -----------------------------------------------------------------------------------------------------------------------
 

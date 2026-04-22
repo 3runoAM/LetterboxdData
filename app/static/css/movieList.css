@@ -43,7 +43,8 @@
     list-style: none;
     overflow-x: auto;
     overflow-y: hidden;
-    width: 60rem;
+    max-width: 60rem;
+    height: 30rem;
 }
 
 .movie-list::-webkit-scrollbar {
@@ -79,14 +80,23 @@
     height: 28rem;
 }
 
+.movie-list > li > img {
+    width: 11.3rem;
+}
+
 .movie-info {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.8rem;
 }
 
 .movie-info > h3 {
-    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 11.3rem;
+    height: 4rem;
     text-align: center;
 }
 

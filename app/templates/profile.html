@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Seu perfil cinéfilo</title>
-    <link rel="icon" href="{{ url_for("static", filename="images/favicon.png") }}" type="image/png">
-    <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
-    <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
-    <link rel="stylesheet" href="{{ url_for("static", filename="css/profile.css") }}">
-    <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
-    <link rel="stylesheet" href="{{ url_for("static", filename="css/wordcloud.css") }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
-          rel="stylesheet">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Seu perfil cinéfilo</title>
+        <link rel="icon" href="{{ url_for("static", filename="images/favicon.png") }}" type="image/png">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/profile.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/wordcloud.css") }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
+              rel="stylesheet">
+    </head>
     <body>
         {% include "partials/nav.html" %}
 
@@ -26,12 +26,23 @@
                 {% endfor %}
             </section>
 
+            <div class="chart-container movie-map">
+                <h3>Mapa da sua jornada</h3>
+
+                <span class="controls">
+                    <p>FILMES POR PAÍS</p>
+                </span>
+
+
+                {{ movie_map | safe }}
+            </div>
+
             <div class="chart-container rewatch">
                 {% from "partials/macros.html" import profiling %}
 
                 {{ profiling(context.rewatch_context.rewatch_profile,
-                            context.rewatch_context.rewatch_description,
-                             rewatch_rate) }}
+                                    context.rewatch_context.rewatch_description,
+                                     rewatch_rate) }}
 
                 {% from "partials/macros.html" import movie_list %}
 
@@ -39,7 +50,7 @@
             </div>
 
             <section class="chart-container word-cloud">
-                <h2>Temas recorrentes nos seus filmes</h2>
+                <h2>Temas recorrentes na sua tela</h2>
                 <span class="horizontal-line word-cloud"></span>
 
                 <img src="{{ url_for("static", filename="images/overview_cloud.png") }}"
