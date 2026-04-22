@@ -1,8 +1,6 @@
 import requests
 import concurrent.futures
 
-from app.config import TMDB_GENRES
-
 class TMDBClient:
     def __init__(self, token):
         self.api_key = token
@@ -24,7 +22,6 @@ class TMDBClient:
             }
 
             response = requests.get(self.search_url, params=params, headers=self.headers, timeout=10)
-
             response.raise_for_status()
 
             results = response.json().get("results")
@@ -32,43 +29,38 @@ class TMDBClient:
                 return None
 
             data = results[0]
-            genres_ids = data.get("genre_ids", [])
-            genre_list = []
-
-            for genre_id in genres_ids:
-                genre_name = TMDB_GENRES.get(genre_id)
-                if genre_name:
-                    genre_list.append(genre_name)
-
-            genres_csv = ",".join(genre_list) if genre_list else None
-
-            #-------------------------------------------------------
             movie_id = data.get("id")
-            credits_url = f"{self.base_url}movie/{movie_id}/credits"
 
-            cred_resp = requests.get(credits_url, headers=self.headers, timeout=5)
-            cred_resp.raise_for_status()
+            details_url = f"{self.base_url}movie/{movie_id}"
+            details_params = {"append_to_response": "credits"}
 
-            crew_data = cred_resp.json().get("crew", [])
-            director_list = []
+            details_response = requests.get(details_url, params=details_params, headers=self.headers, timeout=10)
+            details_response.raise_for_status()
 
-            if crew_data:
-                for crew_member in crew_data:
-                    if crew_member.get("job") == "Director":
-                        director_list.append(crew_member.get("name"))
+            details_data = details_response.json()
 
+            crew_data = details_data.get("credits", {}).get("crew", [])
+            director_list = [member.get("name") for member in crew_data if member.get("job") == "Director"]
             directors_csv = ",".join(director_list) if director_list else None
 
-            poster_path = data.get("poster_path", "https://placehold.co/500x750?text=No+Image")
+            production_countries = details_data.get("production_countries", [])
+            main_country = production_countries[0].get("name") if production_countries else "Unknown"
+
+            genres_data = details_data.get("genres", [])
+            genre_list = [genre.get("name") for genre in genres_data]
+            genres_csv = ",".join(genre_list) if genre_list else None
+
+            original_language = details_data.get("original_language", "Unknown")
+            overview = details_data.get("overview")
+            poster_path = details_data.get("poster_path")
             poster_url = f"{self.image_url}w500{poster_path}" if poster_path else None
-            overview = data.get("overview", None)
-            original_language = data.get("original_language", None)
 
             return {
                 "Name": movie["title"],
                 "Year": movie["release_year"],
                 "Genres": genres_csv,
                 "Directors": directors_csv,
+                "Country": main_country,
                 "Original Language": original_language,
                 "Poster": poster_url,
                 "Overview": overview
