@@ -15,14 +15,6 @@ EXPECTED_DATA = {
 
 # -----------------------------------------------------------------------------------------------------------------------
 
-TMDB_GENRES = {
-    28: "Ação", 12: "Aventura", 16: "Animação", 35: "Comédia", 80: "Crime", 99: "Documentário", 18: "Drama",
-    10751: "Família", 14: "Fantasia", 36: "História", 27: "Terror", 10402: "Música", 9648: "Mistério", 10749: "Romance",
-    878: "Ficção Científica", 10770: "Cinema TV", 53: "Suspense", 10752: "Guerra", 37: "Faroeste"
-}
-
-# -----------------------------------------------------------------------------------------------------------------------
-
 STOPWORDS_OVERVIEW = {
     "although", "another", "anyone", "anything", "attempt", "attempted", "attempting", "attempts",
     "back", "based", "became", "become", "becomes", "becoming", "began", "begin", "beginning", "begins",
@@ -50,5 +42,6 @@ STOPWORDS_OVERVIEW = {
     "told", "took", "town", "true", "try", "tried", "tries", "trying", "turn", "turned", "turning",
     "turns", "two", "use", "used", "uses", "using", "way", "went", "will", "woman", "women", "world",
     "year", "years", "york", "young", "future", "past", "travel", "last", "century", "learn", "search", "stop",
-    "struggle", "land", "join", "best", 
+    "struggle", "land", "join", "best", "supposedly", "actually", "eventually", "ultimately", "finally", "ending",
+    "finish", "introduce",
 }
