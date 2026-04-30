@@ -1,92 +1,127 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <title>Seu perfil cinéfilo</title>
-        <link rel="icon" href="{{ url_for("static", filename="images/favicon.png") }}" type="image/png">
-        <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
-        <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
-        <link rel="stylesheet" href="{{ url_for("static", filename="css/profile.css") }}">
-        <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
-        <link rel="stylesheet" href="{{ url_for("static", filename="css/wordcloud.css") }}">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
-              rel="stylesheet">
-    </head>
-    <body>
-        {% include "partials/nav.html" %}
+<head>
+    <meta charset="UTF-8">
+    <title>Seu perfil cinéfilo</title>
+    <link rel="icon" href="{{ url_for("static", filename="images/favicon.png") }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/profile.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/wordcloud.css") }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+{% include "partials/nav.html" %}
 
-        <main class="container">
-            <section class="metrics-section">
-                {% from "partials/macros.html" import metric_card %}
+<main class="container">
+    <section class="metrics-section">
+        {% from "partials/macros.html" import metric_card %}
 
-                {% for metric in context.metric_list %}
-                    {{ metric_card(metric.value, metric.label) }}
-                {% endfor %}
-            </section>
+        {% for metric in context.metric_list %}
+            {{ metric_card(metric.value, metric.label) }}
+        {% endfor %}
+    </section>
 
-            <div class="chart-container movie-map">
-                <h3>Mapa da sua jornada</h3>
+    <section class="chart-container movie-map">
+        <h3>Mapa da sua jornada</h3>
 
-                <span class="controls">
-                    <p>FILMES POR PAÍS</p>
-                </span>
+        <span class="controls">
+                            <p>FILMES POR PAÍS</p>
+                        </span>
 
 
-                {{ movie_map | safe }}
+        {{ movie_map | safe }}
+    </section>
+
+    <section class="chart-container rewatch">
+        {% from "partials/macros.html" import profiling %}
+
+        {{ profiling(context.rewatch_context.rewatch_profile,
+                                            context.rewatch_context.rewatch_description,
+                                             rewatch_rate) }}
+
+        {% from "partials/macros.html" import movie_list %}
+
+        {{ movie_list("Reassistidos", context.rewatch_context.rewatched_movies, "rewatch") }}
+    </section>
+
+    <section class="chart-container movie-moment">
+        <div class="circles-container">
+            <div>
+                <p class="movie-moment-label day">{{ context.movie_context.favorite_day }}</p>
+                <img src="../static/images/ilustracaosol.png" class="circle day"/>
             </div>
 
-            <div class="chart-container rewatch">
-                {% from "partials/macros.html" import profiling %}
+            <div>
+                <div>
+                    <p class="movie-moment-label genre">{{ context.movie_context.favorite_genre }}</p>
+                    <img src="../static/images/ilustracaopipoca.png" class="circle genre"/>
+                </div>
 
-                {{ profiling(context.rewatch_context.rewatch_profile,
-                                    context.rewatch_context.rewatch_description,
-                                     rewatch_rate) }}
-
-                {% from "partials/macros.html" import movie_list %}
-
-                {{ movie_list("Reassistidos", context.rewatch_context.rewatched_movies, "rewatch") }}
+                <div>
+                    <p class="movie-moment-label decade">{{ context.movie_context.favorite_decade }}</p>
+                    <img src="../static/images/ilustracaofita.png" class="circle decade"/>
+                </div>
             </div>
+        </div>
 
-            <section class="chart-container word-cloud">
-                <h2>Temas recorrentes na sua tela</h2>
-                <span class="horizontal-line word-cloud"></span>
+        <div class="moment-image container">
+            <img src="../static/images/illustracaomomentocinema.png" alt="Homem assistindo TV" class="moment-image">
+        </div>
 
-                <img src="{{ url_for("static", filename="images/overview_cloud.png") }}"
-                     alt="Most common overview word cloud" class="wordcloud-image">
-            </section>
 
-            <div class="chart-container streak">
-                {{ movie_list("Maratona", context.streak_context.movies, "streak") }}
+        <p class="movie-moment-description">
+            Your ultimate movie-watching moment always happens on
+            <span class="day">{{ context.movie_context.favorite_day }}s</span>, making up
+            <span class="percentage">{{ context.movie_context.movie_percentage }}%</span>
+            of your movie time and setting a stage where
+            <span class="decade">{{ context.movie_context.favorite_decade }}</span>
+            <span class="genre">{{ context.movie_context.favorite_genre }}</span> steals the show
+        </p>
+    </section>
 
-                <section class="streak-section">
-                    <div class="circle-container">
-                        <div class="central-text">
-                            {% if context.streak_context.days > 1 %}
-                                <div class="streak-container">
-                                    <h2>{{ context.streak_context.days }}</h2>
-                                    <h3>dias</h3>
-                                </div>
-                            {% else %}
-                                <div class="streak-container">
-                                    <h2>0</h2>
-                                    <h3>Maratonas</h3>
-                                </div>
-                            {% endif %}
+    <section class="chart-container word-cloud">
+        <h2>Temas recorrentes na sua tela</h2>
+        <span class="horizontal-line word-cloud"></span>
+
+        <img src="{{ url_for("static", filename="images/overview_cloud.png") }}"
+             alt="Most common overview word cloud" class="wordcloud-image">
+    </section>
+
+    <div class="chart-container streak">
+        {{ movie_list("Maratona", context.streak_context.movies, "streak") }}
+
+        <section class="streak-section">
+            <div class="circle-container">
+                <div class="central-text">
+                    {% if context.streak_context.days > 1 %}
+                        <div class="streak-container">
+                            <h2>{{ context.streak_context.days }}</h2>
+                            <h3>dias</h3>
                         </div>
-                    </div>
-
-                    <div class="streak-details">
-                        {% if context.streak_context.days > 1 %}
-                            <p class="streak-title">Maratona mais duradoura</p>
-                            <p>{{ context.streak_context.start }} à {{ context.streak_context.end }}</p>
-                        {% else %}
-                            <p class="streak-title">Assista filmes todos os dias para começar uma maratona</p>
-                        {% endif %}
-                    </div>
-                </section>
+                    {% else %}
+                        <div class="streak-container">
+                            <h2>0</h2>
+                            <h3>Maratonas</h3>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        </main>
-    </body>
+
+            <div class="streak-details">
+                {% if context.streak_context.days > 1 %}
+                    <p class="streak-title">Maratona mais duradoura</p>
+                    <p>{{ context.streak_context.start }} à {{ context.streak_context.end }}</p>
+                {% else %}
+                    <p class="streak-title">Assista filmes todos os dias para começar uma maratona</p>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</main>
+</body>
 </html>
