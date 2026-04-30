@@ -1,7 +1,7 @@
 :root {
     --primary-color: #00d94f;
     --secondary-color: #3fbcf2;
-    --accent-color:  #fc7e00;
+    --accent-color: #fc7e00;
     --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
     --text-primary: #edeff1;
     --text-secondary: #A9BBCC;
@@ -19,7 +19,7 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: 6.5rem;
+    gap: 9rem;
     border-radius: 12px;
     text-align: center;
     margin-bottom: 2rem;
@@ -67,7 +67,7 @@
 }
 
 /*---REWATCH----------------------------------------------------------------------------------------------------------*/
-.chart-container.rewatch{
+.chart-container.rewatch {
     gap: 8%;
 }
 
@@ -96,14 +96,83 @@
     height: 25rem;
 }
 
-/*------------------------------------------------------------------------------------------------------------*/
+/*---MOVIE MOMENT----------------------------------------------------------------------------------------------------------*/
 
-.vertical-separator {
-    width: 0.5rem;
-    height: 20rem;
-    background-color: var(--background-primary);
-    margin: 0.2rem;
-    border-radius: 12px;
+.chart-container.movie-moment {
+    flex-direction: column;
+    position: relative
+}
+
+.movie-moment {
+    padding: 5rem 0 6rem 0;
+}
+
+.circles-container {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.circles-container > div:first-child {
+    align-self: center;
+}
+
+.circles-container > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 48rem;
+}
+
+.circle {
+    width: 15rem;
+}
+
+.genre {
+    text-shadow: 0.1rem 0.1rem var(--primary-color);
+}
+
+.day {
+    text-shadow: 0.1rem 0.1rem var(--accent-color);
+}
+
+.decade {
+    text-shadow: 0.1rem 0.1rem var(--secondary-color);
+}
+
+.percentage {
+    font-weight: bold;
+     text-shadow: 0.1rem 0.1rem var(--text-secondary);
+}
+
+.moment-image.container {
+    position: relative;
+    align-self: center;
+}
+
+.moment-image {
+    width: 60rem;
+    align-self: flex-end;
+}
+
+.movie-moment-label {
+    font: 900 2rem var(--geologica);
+}
+
+.movie-moment-description {
+    position: absolute;
+    text-align: center;
+    align-self: center;
+    bottom: 2rem;
+    font: 900 1.8rem var(--graphik);
+    width: 40%;
+}
+
+p.day, p.genre, p.decade {
+    text-transform: uppercase;
 }
 
 /*---STREAK----------------------------------------------------------------------------------------------------------*/
