@@ -7,17 +7,17 @@
         <ul class="link-section">
             <li>
                 <a href="{{ url_for("main.profile_route") }}" class="{{ "active" if request.endpoint == "main.profile_route" else "" }}">
-                    Perfil Cinéfilo
+                    Profile
                 </a>
             </li>
             <li>
                 <a href="{{ url_for("main.current_profile") }}" class="{{ "active" if request.endpoint == "main.current_profile" else "" }}">
-                    Vibe Atual
+                    Current Vibe
                 </a>
             </li>
             <li>
                 <a href="{{ url_for("main.badges_route") }}" class="{{ "active" if request.endpoint == "main.badges_route" else "" }}">
-                    Conquistas
+                    Badges
                 </a>
             </li>
         </ul>

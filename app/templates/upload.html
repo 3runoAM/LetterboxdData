@@ -19,17 +19,17 @@
                     <img src="{{ url_for('static', filename='images/hero.png') }}" alt="hero" class="hero-image">
                     <span class="hero-filler"></span>
                     <div class="hero-text-container">
-                        <p>“Conhecer a si mesmo é o começo de toda a sabedoria”</p>
-                        <p>—Aristóteles</p>
+                        <p>“Knowing yourself is the beginning of all wisdom”</p>
+                        <p>—Aristotle</p>
                     </div>
                 </div>
             </section>
 
             <section class="lower-section">
                 <div class="description-text-container">
-                    <p>Conheça os seus gostos.</p>
-                    <p> Receba sugestões baseadas nas suas preferências.</p>
-                    <p>Avalie as sugestões para melhorá-las.</p>
+                    <p>Discover your viewing patterns</p>
+                    <p>Get suggestions tailored to your preferences</p>
+                    <p>Rate to sharpen your results</p>
                 </div>
 
                 {% with messages = get_flashed_messages() %}
@@ -43,7 +43,7 @@
                 {% endwith %}
 
                <form id="uploadForm" action="/saveFiles" method="POST" enctype="multipart/form-data">
-                    <button type="button" id="sendButton">Envie os arquivos CSV</button>
+                    <button type="button" id="sendButton">Upload your CSV files</button>
                     <input id="inputFile" name="files" type="file" accept="text/csv" multiple>
                </form>
             </section>
