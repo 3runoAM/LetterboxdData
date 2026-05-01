@@ -1,46 +1,31 @@
 import pandas
-from pandas.core.methods import describe
-
 
 def get_total_movies(df_watched):
     return df_watched.shape[0]
 
-
 def get_average_rating(df_rating):
     return round(df_rating["Rating"].mean(), 1)
 
-
 def get_favorite_day(df_diary):
-    days_ptbr = {
-        "Monday": "Segunda-feira",
-        "Tuesday": "Terça-feira",
-        "Wednesday": "Quarta-feira",
-        "Thursday": "Quinta-feira",
-        "Friday": "Sexta-feira",
-        "Saturday": "Sábado",
-        "Sunday": "Domingo"
-    }
+    favorite_day = df_diary["day_of_week"].mode()[0]
 
-    favorite_day_en = df_diary["Dia_da_Semana"].mode()[0]
-
-    return days_ptbr.get(favorite_day_en, favorite_day_en)
+    return favorite_day
 
 
 def get_favorite_decade(df_ratings):
     decades = df_ratings.groupby("Decade").agg(
-        Media=("Rating", "mean"),
-        Contagem=("Rating", "count")
+        Average=("Rating", "mean"),
+        Count=("Rating", "count")
     )
 
-    valid_decades = decades[decades["Contagem"] >= 5]
+    valid_decades = decades[decades["Count"] >= 5]
 
     if valid_decades.empty:
         return None
 
-    favorite_decade = valid_decades["Media"].idxmax()
+    favorite_decade = valid_decades["Average"].idxmax()
 
     return favorite_decade
-
 
 def get_favorite_genre(df_watched_enriched):
     if df_watched_enriched is not None:
@@ -53,7 +38,7 @@ def get_favorite_genre(df_watched_enriched):
     return None
 
 
-def get_favorite_director(df_watched_enriched):
+def get_most_frequent_director(df_watched_enriched):
     if df_watched_enriched is not None:
         common_directors = df_watched_enriched["Directors"].str.split(",").explode().str.strip()
 
@@ -62,24 +47,23 @@ def get_favorite_director(df_watched_enriched):
         return None
     return None
 
-
 def get_rewatch_context(df_diary, df_watched_enriched):
     total_diary = len(df_diary)
     total_rewatches = df_diary["Rewatch"].sum()
-    taxa_rewatch = (total_rewatches / total_diary) * 100 if total_diary > 0 else 0
+    rewatch_rate = (total_rewatches / total_diary) * 100 if total_diary > 0 else 0
 
-    if taxa_rewatch >= 40:
-        rewatch_profile = "Guardião da Nostalgia"
-        rewatch_description = f"Com {taxa_rewatch:.1f}% de filmes revistos, você tem filmes de conforto e ama revisitá-los. Por que arriscar se o clássico é garantido?"
-    elif taxa_rewatch >= 15:
-        rewatch_profile = "Curador Equilibrado"
-        rewatch_description = f"Sua taxa de rewatch é de {taxa_rewatch:.1f}%. Você não tem medo de fazer novas descobertas, mas nunca abandona seus filmes conforto"
-    elif taxa_rewatch >= 5:
-        rewatch_profile = "Explorador"
-        rewatch_description = f"Você reassiste apenas {taxa_rewatch:.1f}% dos filmes. O mundo é grande demais para gastar tempo vendo a mesma coisa"
+    if rewatch_rate >= 40:
+        rewatch_profile = "Resident"
+        rewatch_description = f"Some people watch movies; you live in them. Your {rewatch_rate:.1f}% rewatch rate proves that a masterpiece only gets better with the 2nd viewing onwards"
+    elif rewatch_rate >= 15:
+        rewatch_profile = "Curator"
+        rewatch_description = f"You aren't afraid of new discoveries, but your {rewatch_rate:.1f}% rewatch rate shows that you never truly abandon your comfort films"
+    elif rewatch_rate >= 5:
+        rewatch_profile = "Explorer"
+        rewatch_description = f"The world is too big to spend time watching the same thing twice, right? With {rewatch_rate:.1f}% rewatch rate, you prefer to keep moving forward and discover new stories"
     else:
-        rewatch_profile = "Caçador de Inéditos"
-        rewatch_description = f"Você reassistiu filmes {taxa_rewatch:.1f}% das vezes! Reprise é uma palavra que não existe no seu dicionário"
+        rewatch_profile = "Trailblazer"
+        rewatch_description = f"\"Never look back\" is your motto for life. Your eyes are always on the horizon with {rewatch_rate:.1f}% rewatch rate"
 
     # ------------------------------------------------------------------
     rewatched_movies = None
@@ -112,16 +96,16 @@ def get_streak_context(df_diary, df_watched_enriched):
     streaks = dates.groupby(streak_ids).agg(["count", "min", "max"])
     longest = streaks.loc[streaks["count"].idxmax()]
 
-    meses_pt = {
-        1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
-        5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
-        9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+    months = {
+        1: "January", 2: "February", 3: "March", 4: "April",
+        5: "May", 6: "June", 7: "July", 8: "August",
+        9: "September", 10: "October", 11: "November", 12: "December"
     }
 
-    def format_date_pt(date_obj):
+    def format_date(date_obj):
         if pandas.isna(date_obj):
             return None
-        return f"{date_obj.day} de {meses_pt[date_obj.month]} de {date_obj.year}"
+        return f"{months[int(date_obj.month)]} {int(date_obj.day)}, {int(date_obj.year)}"
 
     streak_movies = None
     if df_watched_enriched is not None and longest["count"] > 1:
@@ -135,23 +119,23 @@ def get_streak_context(df_diary, df_watched_enriched):
 
     return {
         "days": int(longest["count"]),
-        "start": format_date_pt(longest["min"]),
-        "end": format_date_pt(longest["max"]),
+        "start": format_date(longest["min"]),
+        "end": format_date(longest["max"]),
         "movies": streak_movies,
     }
 
 
 def get_movie_moment_context(df_diary, df_watched_enriched):
     df_master = pandas.merge(
-        df_diary[["Name", "Year", "Rating", "Dia_da_Semana"]],
+        df_diary[["Name", "Year", "Rating", "day_of_week"]],
         df_watched_enriched[["Name", "Year", "Genres"]],
         on=["Name", "Year"]
     )
 
     total_movies = len(df_master)
 
-    favorite_day = df_master["Dia_da_Semana"].mode()[0]
-    df_movies_from_favorite_day = df_master[df_master["Dia_da_Semana"] == favorite_day].copy()
+    favorite_day = df_master["day_of_week"].mode()[0]
+    df_movies_from_favorite_day = df_master[df_master["day_of_week"] == favorite_day].copy()
 
     total_movies_from_favorite_day = len(df_movies_from_favorite_day)
     movie_percentage = (total_movies_from_favorite_day / total_movies) * 100
@@ -175,12 +159,12 @@ def get_movie_moment_context(df_diary, df_watched_enriched):
 
 
 def get_context(df_watched, df_diary, df_ratings, df_watched_enriched=None):
-    total_movies = {"label": "Filmes Assistidos", "value": get_total_movies(df_watched)}
-    favorite_day = {"label": "Dia de cinema", "value": get_favorite_day(df_diary)}
-    favorite_decade = {"label": "Década favorita", "value": get_favorite_decade(df_ratings)}
-    average_rating = {"label": "Média de avaliação", "value": get_average_rating(df_ratings)}
-    favorite_genre = {"label": "Gênero favorito", "value": get_favorite_genre(df_watched_enriched)}
-    favorite_director = {"label": "Diretor Favorito", "value": get_favorite_director(df_watched_enriched)}
+    total_movies = {"label": "Movies Watched", "value": get_total_movies(df_watched)}
+    favorite_day = {"label": "Cinema Day", "value": get_favorite_day(df_diary)}
+    favorite_decade = {"label": "Golden Decade", "value": get_favorite_decade(df_ratings)}
+    average_rating = {"label": "Average Rating", "value": get_average_rating(df_ratings)}
+    favorite_genre = {"label": "Go-to Genre", "value": get_favorite_genre(df_watched_enriched)}
+    favorite_director = {"label": "Resident Director", "value": get_most_frequent_director(df_watched_enriched)}
 
     metric_list = [total_movies, favorite_day, favorite_decade, average_rating, favorite_genre, favorite_director]
 

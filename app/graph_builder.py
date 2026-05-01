@@ -9,12 +9,12 @@ from PIL import Image, ImageOps
 
 def plot_rewatch_rate(df_diary):
     rewatches = df_diary["Rewatch"].value_counts().reset_index()
-    rewatches.columns = ["Rewatch", "Quantidade"]
+    rewatches.columns = ["Rewatch", "Amount"]
 
-    rewatches["Rewatch"] = rewatches["Rewatch"].map({True: "Revistos", False: "Inéditos"})
+    rewatches["Rewatch"] = rewatches["Rewatch"].map({True: "Rewatch", False: "First time"})
 
-    fig = px.pie(rewatches, values="Quantidade", names="Rewatch", color="Rewatch",
-                 color_discrete_map={"Revistos": "#f37b01", "Inéditos": "#3eb7eb"}, hole=0.4)
+    fig = px.pie(rewatches, values="Amount", names="Rewatch", color="Rewatch",
+                 color_discrete_map={"Rewatch": "#f37b01", "First time": "#3eb7eb"}, hole=0.4)
 
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
