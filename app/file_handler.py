@@ -5,27 +5,28 @@ from .config import DATA_DIR, EXPECTED_DATA
 
 def validate_files(files: list):
     file_names = [file.filename for file in files if file.filename]
-    expected_names = EXPECTED_DATA.keys()
+    expected_names = set(EXPECTED_DATA.keys())
 
     if (len(file_names) != len(expected_names)) or (set(file_names) != expected_names):
-        return False, "Arquivos inválidos"
+        return False, "Invalid files"
 
     for file in files:
         filename = file.filename
         expected_columns = set(EXPECTED_DATA[filename])
 
         try:
-            file_columns = set(pandas.read_csv(file.stream, nrows=0))
+            file_columns = set(pandas.read_csv(file.stream, nrows=0).columns)
 
-            if expected_columns != file_columns: return False, "Um ou mais arquivos possuem colunas inválidas"
+            if expected_columns != file_columns:
+                return False, "One or more files have invalid columns"
 
-            file.seek(0)
-        except Exception:
-            print(f"Erro ao processar {filename}")
-            return False, "Um ou mais arquivos estão corrompidos ou não são um CSV válido"
+            file.stream.seek(0)
         except pandas.errors.EmptyDataError:
-            print(f"O arquivo '{filename}' está vazio.")
-            return False, "Um ou mais arquivos estão vazios"
+            print(f"File `{filename}` is empty.")
+            return False, "One or more files are empty"
+        except Exception:
+            print(f"Error processing `{filename}`")
+            return False, "One or more files are corrupted or are not a valid CSV"
 
     return True, "OK"
 
@@ -49,6 +50,6 @@ def is_data_available():
 def is_data_processed():
     processed_files = ["df_diary.csv", "df_rating.csv", "df_watched.csv", "df_watched_enriched.csv"]
     for filename in processed_files:
-        if not os.path.exists(os.path.join("data/dataFrames", filename)):
+        if not os.path.exists(os.path.join(DATA_DIR, filename)):
             return False
     return True
