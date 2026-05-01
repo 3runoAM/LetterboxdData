@@ -45,7 +45,7 @@
 
                 {% from "partials/macros.html" import movie_list %}
 
-                {{ movie_list("Reassistidos", context.rewatch_context.rewatched_movies, "rewatch") }}
+                {{ movie_list("Rewatch", context.rewatch_context.rewatched_movies, "rewatch") }}
             </section>
 
             <section class="chart-container movie-moment">
@@ -91,7 +91,7 @@
             </section>
 
             <div class="chart-container streak">
-                {{ movie_list("Maratona", context.streak_context.movies, "streak") }}
+                {{ movie_list("Movie Streak", context.streak_context.movies, "streak") }}
 
                 <section class="streak-section">
                     <div class="circle-container">

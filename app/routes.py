@@ -18,7 +18,7 @@ def main_route():
 
 # -----------------------------------------------------------------------------------------------------------------------
 
-@main.route("/saveFiles", methods=["POST"])
+@main.route("/save-files", methods=["POST"])
 def save_files_route():
     files = request.files.getlist("files")
     valid, message = validate_files(files)
@@ -56,7 +56,7 @@ def process_data():
         return {"status": "error", "message": str(e)}, 500
 # -----------------------------------------------------------------------------------------------------------------------
 
-@main.route("/perfil", methods=["GET"])
+@main.route("/profile", methods=["GET"])
 def profile_route():
     try:
         if not is_data_processed():
@@ -85,13 +85,13 @@ def profile_route():
 
 # -----------------------------------------------------------------------------------------------------------------------
 
-@main.route("/perfilAtual", methods=["GET"])
+@main.route("/current-profile", methods=["GET"])
 def current_profile():
     return render_template("currentProfile.html")
 
 
 # -----------------------------------------------------------------------------------------------------------------------
 
-@main.route("/conquistas", methods=["GET"])
+@main.route("/badges", methods=["GET"])
 def badges_route():
     return render_template("badges.html")

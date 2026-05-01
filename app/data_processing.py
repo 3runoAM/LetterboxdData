@@ -1,10 +1,10 @@
 import os
 import pandas
-from .config import DATA_DIR, BASE_DIR
+from .config import FILES_DIR, BASE_DIR
 
 
 def process_diary():
-    df_diary = pandas.read_csv(os.path.join(DATA_DIR, "diary.csv"))
+    df_diary = pandas.read_csv(os.path.join(FILES_DIR, "diary.csv"))
 
     del df_diary["Letterboxd URI"]
     del df_diary["Tags"]
@@ -25,7 +25,7 @@ def process_diary():
 # -----------------------------------------------------------------------------------------------------------------------
 
 def process_ratings():
-    df_ratings = pandas.read_csv(os.path.join(DATA_DIR, "ratings.csv"))
+    df_ratings = pandas.read_csv(os.path.join(FILES_DIR, "ratings.csv"))
 
     del df_ratings["Letterboxd URI"]
 
@@ -41,7 +41,7 @@ def process_ratings():
 # -----------------------------------------------------------------------------------------------------------------------
 
 def process_watched():
-    df_watched = pandas.read_csv(os.path.join(DATA_DIR, "watched.csv"))
+    df_watched = pandas.read_csv(os.path.join(FILES_DIR, "watched.csv"))
 
     del df_watched["Letterboxd URI"]
 
