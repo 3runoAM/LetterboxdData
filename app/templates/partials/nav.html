@@ -1,22 +1,22 @@
 <nav>
     <div class="nav-section">
-        <a href="{{ url_for("main.perfil_route") }}">
+        <a href="{{ url_for("main.profile_route") }}">
             {% include "partials/logo.html" %}
         </a>
 
         <ul class="link-section">
             <li>
-                <a href="{{ url_for("main.perfil_route") }}" class="{{ "active" if request.endpoint == "main.perfil_route" else "" }}">
+                <a href="{{ url_for("main.profile_route") }}" class="{{ "active" if request.endpoint == "main.profile_route" else "" }}">
                     Perfil Cinéfilo
                 </a>
             </li>
             <li>
-                <a href="{{ url_for("main.perfil_atual") }}" class="{{ "active" if request.endpoint == "main.perfil_atual" else "" }}">
+                <a href="{{ url_for("main.current_profile") }}" class="{{ "active" if request.endpoint == "main.current_profile" else "" }}">
                     Vibe Atual
                 </a>
             </li>
             <li>
-                <a href="{{ url_for("main.conquistas_route") }}" class="{{ "active" if request.endpoint == "main.conquistas_route" else "" }}">
+                <a href="{{ url_for("main.badges_route") }}" class="{{ "active" if request.endpoint == "main.badges_route" else "" }}">
                     Conquistas
                 </a>
             </li>

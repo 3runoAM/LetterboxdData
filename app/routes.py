@@ -14,7 +14,7 @@ def main_route():
     if not is_data_available() or not is_data_processed():
         return render_template("upload.html")
     else:
-        return redirect(url_for("main.perfil_route"))
+        return redirect(url_for("main.profile_route"))
 
 # -----------------------------------------------------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ def process_data():
 # -----------------------------------------------------------------------------------------------------------------------
 
 @main.route("/perfil", methods=["GET"])
-def perfil_route():
+def profile_route():
     try:
         if not is_data_processed():
             return redirect(url_for("main.main_route"))
@@ -75,10 +75,10 @@ def perfil_route():
                                movie_map=movie_map_graph)
 
     except FileNotFoundError:
-        flash("Nenhum arquivo encontrado. Faça o upload dos arquivos necessários")
+        flash("Data files not found. Please upload your data again.")
         return redirect(url_for("main.main_route"))
     except Exception as e:
-        print(f"Erro ao processar os dados: {e.with_traceback(e.__traceback__)}")
+        print(f"Data processing error: {e}")
         return redirect(url_for("main.main_route"))
 
 
@@ -86,12 +86,12 @@ def perfil_route():
 # -----------------------------------------------------------------------------------------------------------------------
 
 @main.route("/perfilAtual", methods=["GET"])
-def perfil_atual():
+def current_profile():
     return render_template("currentProfile.html")
 
 
 # -----------------------------------------------------------------------------------------------------------------------
 
 @main.route("/conquistas", methods=["GET"])
-def conquistas_route():
+def badges_route():
     return render_template("badges.html")
