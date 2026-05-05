@@ -7,7 +7,7 @@ def get_average_rating(df_rating):
     return round(df_rating["Rating"].mean(), 1)
 
 def get_favorite_day(df_diary):
-    favorite_day = df_diary["day_of_week"].mode()[0]
+    favorite_day = df_diary["Day_Of_Week"].mode()[0]
 
     return favorite_day
 
@@ -127,15 +127,15 @@ def get_streak_context(df_diary, df_watched_enriched):
 
 def get_movie_moment_context(df_diary, df_watched_enriched):
     df_master = pandas.merge(
-        df_diary[["Name", "Year", "Rating", "day_of_week"]],
+        df_diary[["Name", "Year", "Rating", "Day_Of_Week"]],
         df_watched_enriched[["Name", "Year", "Genres"]],
         on=["Name", "Year"]
     )
 
     total_movies = len(df_master)
 
-    favorite_day = df_master["day_of_week"].mode()[0]
-    df_movies_from_favorite_day = df_master[df_master["day_of_week"] == favorite_day].copy()
+    favorite_day = df_master["Day_Of_Week"].mode()[0]
+    df_movies_from_favorite_day = df_master[df_master["Day_Of_Week"] == favorite_day].copy()
 
     total_movies_from_favorite_day = len(df_movies_from_favorite_day)
     movie_percentage = (total_movies_from_favorite_day / total_movies) * 100

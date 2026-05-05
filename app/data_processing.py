@@ -17,7 +17,7 @@ def process_diary():
 
     df_diary["Year_Month"] = df_diary["Watched Date"].dt.to_period("M").astype(str)
     df_diary["Watched_Year"] = df_diary["Watched Date"].dt.year
-    df_diary["da_of_week"] = df_diary["Watched Date"].dt.day_name()
+    df_diary["Day_Of_Week"] = df_diary["Watched Date"].dt.day_name()
     df_diary["Time_Lag"] = df_diary["Watched_Year"] - df_diary["Year"]
 
     return df_diary
@@ -43,14 +43,12 @@ def process_ratings():
 def process_watched():
     df_watched = pandas.read_csv(os.path.join(FILES_DIR, "watched.csv"))
 
-    del df_watched["Letterboxd URI"]
-
     df_watched["Date"] = pandas.to_datetime(df_watched["Date"], errors="coerce")
     df_watched = df_watched.dropna(subset=["Date"]).copy()
 
     df_watched["Year"] = pandas.to_numeric(df_watched["Year"], errors="coerce")
 
-    movies = df_watched[["Name", "Year"]].drop_duplicates().dropna()
+    movies = df_watched[["Name", "Year", "Letterboxd URI"]].drop_duplicates().dropna()
     movies = movies.rename(columns={"Name": "title", "Year": "release_year"}).to_dict(orient="records")
 
     return df_watched, movies
