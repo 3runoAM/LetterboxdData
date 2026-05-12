@@ -4,7 +4,6 @@ import json
 import os
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 
-
 class TMDBClient:
     def __init__(self, token):
         self.api_key = token
@@ -42,7 +41,6 @@ class TMDBClient:
     def _make_request(self, url, params):
         response = requests.get(url, params=params, headers=self.headers, timeout=10)
 
-        # Se batermos no rate limit do TMDB, forçamos o erro para o tenacity tentar de novo
         if response.status_code == 429:
             raise Exception("Rate limit do TMDB atingido (Erro 429). Tentando novamente...")
 
@@ -111,7 +109,6 @@ class TMDBClient:
         results = []
         completed_tasks = {}
 
-        # MANTENDO OS SEUS 10 WORKERS
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for movie in movie_list:
                 task = executor.submit(self.fetch_movie_details, movie)
@@ -125,6 +122,5 @@ class TMDBClient:
                 except Exception as err:
                     print(f"Erro no processamento de uma thread paralela: {err}")
 
-        # 4. SALVA O CACHE NO DISCO ASSIM QUE TODOS OS FILMES TERMINAREM
         self._save_cache()
         return results

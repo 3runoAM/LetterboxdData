@@ -1,9 +1,12 @@
 import os
 import pandas
 from flask import Blueprint, request, render_template, flash, redirect, url_for
+from sqlalchemy import inspect
+
 from .context_engine import get_context
+from .data_base import data_base, get_data_base_engine, is_missing_table
 from .data_processing import process_diary, process_ratings, process_watched, get_processed_data
-from .file_handler import validate_files, save_files, is_data_available, is_data_processed
+from .file_handler import validate_files, save_files, is_data_available
 from .graph_builder import plot_rewatch_rate, plot_overview_wordcloud, plot_movie_map
 from .TMDB_Client import TMDBClient
 
@@ -11,7 +14,7 @@ main = Blueprint("main", __name__)
 
 @main.route("/", methods=["GET"])
 def main_route():
-    if not is_data_available() or not is_data_processed():
+    if is_missing_table():
         return render_template("upload.html")
     else:
         return redirect(url_for("main.profile_route"))
@@ -35,18 +38,24 @@ def save_files_route():
 @main.route("/api/process-data", methods=["POST"])
 def process_data():
     try:
-        df_diary, df_rating, df_watched, movies = get_processed_data()
-
+        db_connection = get_data_base_engine()
         client = TMDBClient(os.getenv("API_KEY"))
+
+        df_diary, df_rating, df_watched, movies = get_processed_data()
         enriched_data = client.fetch_movies_parallel(movies)
 
         df_enriched = pandas.DataFrame(enriched_data)
         df_watched_enriched = df_watched.merge(df_enriched, how="left", on=["Name", "Year"]).dropna(subset="Genres")
 
-        df_diary.to_csv("data/dataFrames/df_diary.csv", index=False)
-        df_rating.to_csv("data/dataFrames/df_rating.csv", index=False)
-        df_watched.to_csv("data/dataFrames/df_watched.csv", index=False)
-        df_watched_enriched.to_csv("data/dataFrames/df_watched_enriched.csv", index=False)
+        df_diary.to_sql('diary', db_connection, if_exists='replace', index=False)
+        df_rating.to_sql('ratings', db_connection, if_exists='replace', index=False)
+        df_watched.to_sql('watched', db_connection, if_exists='replace', index=False)
+        df_watched_enriched.to_sql('watched_enriched', db_connection, if_exists='replace', index=False)
+
+        print(df_diary)
+        print(df_rating)
+        print(df_watched)
+        print(df_watched_enriched)
 
         plot_overview_wordcloud(df_watched_enriched)
 
@@ -59,13 +68,17 @@ def process_data():
 @main.route("/profile", methods=["GET"])
 def profile_route():
     try:
-        if not is_data_processed():
-            return redirect(url_for("main.main_route"))
+        data_base = get_data_base_engine()
 
-        df_diary = pandas.read_csv("data/dataFrames/df_diary.csv", parse_dates=["Date", "Watched Date"])
-        df_rating = pandas.read_csv("data/dataFrames/df_rating.csv", parse_dates=["Date"])
-        df_watched = pandas.read_csv("data/dataFrames/df_watched.csv", parse_dates=["Date"])
-        df_watched_enriched = pandas.read_csv("data/dataFrames/df_watched_enriched.csv", parse_dates=["Date"])
+        df_diary = pandas.read_sql('diary', data_base)
+        df_rating = pandas.read_sql('ratings', data_base)
+        df_watched = pandas.read_sql('watched', data_base)
+        df_watched_enriched = pandas.read_sql('watched_enriched', data_base)
+
+        df_diary["Watched Date"] = pandas.to_datetime(df_diary["Watched Date"], errors="coerce")
+        df_diary["Day_Of_Week"] = df_diary["Watched Date"].dt.day_name()
+
+        print(df_diary)
 
         context = get_context(df_watched, df_diary, df_rating, df_watched_enriched)
         rewatch_rate_graph = plot_rewatch_rate(df_diary)
