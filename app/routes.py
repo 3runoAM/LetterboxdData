@@ -52,11 +52,6 @@ def process_data():
         df_watched.to_sql('watched', db_connection, if_exists='replace', index=False)
         df_watched_enriched.to_sql('watched_enriched', db_connection, if_exists='replace', index=False)
 
-        print(df_diary)
-        print(df_rating)
-        print(df_watched)
-        print(df_watched_enriched)
-
         plot_overview_wordcloud(df_watched_enriched)
 
         return {"status": "success"}, 200
