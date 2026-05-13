@@ -1,6 +1,10 @@
 import os
 import pandas
+
+from .TMDB_Client import TMDBClient
 from .config import FILES_DIR, BASE_DIR
+from .data_base import data_base
+from .models import Movie, Genre, Director, WatchLog
 
 
 def process_diary():
@@ -22,6 +26,7 @@ def process_diary():
 
     return df_diary
 
+
 # -----------------------------------------------------------------------------------------------------------------------
 
 def process_ratings():
@@ -38,6 +43,7 @@ def process_ratings():
 
     return df_ratings
 
+
 # -----------------------------------------------------------------------------------------------------------------------
 
 def process_watched():
@@ -53,9 +59,107 @@ def process_watched():
 
     return df_watched, movies
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 
-def transform_and_load
+def transform_and_load(movies, df_watched, df_diary):
+    db_movies = data_base.session.query(Movie.title, Movie.release_year).all()
+    db_movies_set = {(movie.title, movie.release_year) for movie in db_movies}
+
+    print("data_base_movies:", len(db_movies_set))
+    print("movies:", movies)
+
+    enrich_list = []
+    for movie in movies:
+        year = int(movie["release_year"]) if movie["release_year"] else None
+        title = movie["title"]
+        if (title, year) not in db_movies_set:
+            enrich_list.append(movie)
+
+    if len(enrich_list) != 0:
+        client = TMDBClient(os.getenv("API_KEY"))
+
+        enriched_data = []
+
+        print("Enriching", len(enrich_list))
+        print("Enriching movies:", enrich_list)
+
+        enriched_data = client.fetch_movies_parallel(enrich_list)
+
+        print("Enriched data:", enriched_data)
+        df_enriched = pandas.DataFrame(enriched_data)
+        df_watched_enriched = df_watched.merge(df_enriched, how="left", on=["Name", "Year"]).dropna(subset="Genres")
+        print("df_watched_enriched:", df_watched_enriched.head())
+
+        for i, movie in df_watched_enriched.iterrows():
+            save_enriched_movie(movie)
+
+    save_diary_logs(df_diary)
+
+    return None
+
+
+def save_enriched_movie(movie):
+    genre_references = []
+    for genre in movie["Genres"].split(","):
+        clean_name = genre.strip()
+        db_genre = data_base.session.query(Genre).filter_by(name=clean_name).first()
+        if not db_genre:
+            db_genre = Genre(name=clean_name)
+            data_base.session.add(db_genre)
+            data_base.session.flush()
+        genre_references.append(db_genre)
+
+    director_references = []
+    for director in movie["Directors"].split(","):
+        clean_name = director.strip()
+        db_director = Director.query.filter_by(name=clean_name).first()
+        if not db_director:
+            db_director = Director(name=clean_name)
+            data_base.session.add(db_director)
+            data_base.session.flush()
+        director_references.append(db_director)
+
+    new_movie = Movie(
+        title=movie["Name"],
+        release_year=movie["Year"],
+        poster_url=movie["Poster"],
+        overview=movie["Overview"],
+        country=movie["Country"],
+        original_language=movie["Original Language"]
+    )
+
+    new_movie.genres = genre_references
+    new_movie.directors = director_references
+    data_base.session.add(new_movie)
+
+    data_base.session.commit()
+
+
+def save_diary_logs(df_diary):
+    db_movies = Movie.query.with_entities(Movie.id, Movie.title, Movie.release_year).all()
+    movie_id_map = {(movie.title, movie.release_year): movie.id for movie in db_movies}
+
+    WatchLog.query.delete()
+    for i, movie in df_diary.iterrows():
+        title = movie["Name"]
+        release_year = int(movie["Year"]) if movie["Year"] else None
+
+        movie_id = movie_id_map.get((title, release_year))
+        if movie_id is not None:
+            new_watch_log = WatchLog(
+                movie_id=movie_id,
+                watched_date=movie["Watched Date"],
+                rating=movie["Rating"],
+                is_rewatch=movie["Rewatch"]
+            )
+            data_base.session.add(new_watch_log)
+
+    data_base.session.commit()
+
+    return None
+
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
