@@ -1,12 +1,7 @@
-import os
-import pandas
 from flask import Blueprint, request, render_template, flash, redirect, url_for
-from .context_engine import get_context
-from .data_base import data_base, get_data_base_engine
-from .ETL_processing import process_diary, process_ratings, process_watched, get_processed_data, transform_and_load
-from .file_handler import validate_files, save_files, is_data_available
-from .graph_builder import plot_rewatch_rate, plot_overview_wordcloud, plot_movie_map
 
+from app.services.etl_service import get_processed_data, transform_and_load
+from app.utils.file_handler import validate_files, save_files, is_data_available
 
 main = Blueprint("main", __name__)
 
@@ -39,8 +34,6 @@ def process_data():
         df_diary, df_rating, df_watched, movies = get_processed_data()
 
         transform_and_load(movies, df_watched, df_diary)
-
-        # plot_overview_wordcloud(df_watched_enriched)
 
         return {"status": "success"}, 200
     except Exception as e:
