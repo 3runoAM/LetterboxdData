@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 import pandas
 import calendar
-from sqlalchemy import func, extract
+from sqlalchemy import func, extract, case
+from sqlalchemy.ext.asyncio import result
 
 from app.data_base import data_base
 from app.models import Movie, Genre, Director, WatchLog
@@ -19,56 +22,70 @@ def get_favorite_day():
         WatchLog.day_of_week.label("day_name"),
         func.count(WatchLog.day_of_week).label("day_count")
     ).group_by(WatchLog.day_of_week)
-     .order_by(func.count(WatchLog.day_of_week).desc())
-     .first())
+              .order_by(func.count(WatchLog.day_of_week).desc())
+              .first())
 
     return result.day_name or None
 
 
 def get_favorite_decade():
+    result = (data_base.session.query(
+        Movie.decade.label("decade"),
+        func.avg(WatchLog.rating).label("average_rating"),
+        func.count(WatchLog.id).label("log_count")
+    ).join(WatchLog, Movie.id == WatchLog.movie_id)
+              .group_by(Movie.decade)
+              .having(func.count(WatchLog.id) >= 5)
+              .order_by(func.avg(WatchLog.rating).desc())
+              .first())
+
+    return result.decade or None
 
 
-    return None
+def get_favorite_genre():
+    result = (data_base.session.query(
+        Genre.name.label('genre_name'),
+        func.avg(WatchLog.rating).label('average_rating'),
+        func.count(WatchLog.id).label('watch_count')
+    ).select_from(WatchLog)
+              .join(Movie, WatchLog.movie_id == Movie.id)
+              .join(Movie.genres)
+              .group_by(Genre.name)
+              .having(func.count(WatchLog.id) >= 5)
+              .order_by(
+        func.count(WatchLog.id).desc(),
+        func.avg(WatchLog.rating).desc())
+              .first())
 
-# def get_favorite_decade(df_ratings):
-#     decades = df_ratings.groupby("Decade").agg(
-#         Average=("Rating", "mean"),
-#         Count=("Rating", "count")
-#     )
-#
-#     valid_decades = decades[decades["Count"] >= 5]
-#
-#     if valid_decades.empty:
-#         return None
-#
-#     favorite_decade = valid_decades["Average"].idxmax()
-#
-#     return favorite_decade
-
-def get_favorite_genre(df_watched_enriched):
-    if df_watched_enriched is not None:
-        common_genres = df_watched_enriched["Genres"].str.split(",").explode().str.strip()
-
-        if not common_genres.empty:
-            return common_genres.value_counts().index[0]
-
-        return None
-    return None
+    return result.genre_name or None
 
 
-def get_most_frequent_director(df_watched_enriched):
-    if df_watched_enriched is not None:
-        common_directors = df_watched_enriched["Directors"].str.split(",").explode().str.strip()
+def get_most_frequent_director():
+    result = (data_base.session.query(
+        Director.name.label("director_name"),
+        func.count(WatchLog.id).label("watch_count"),
+        func.avg(WatchLog.rating).label('average_rating')
+    ).select_from(WatchLog)
+              .join(Movie, WatchLog.movie_id == Movie.id)
+              .join(Movie.directors)
+              .group_by(Director.name)
+              .order_by(
+        func.count(WatchLog.id).desc(),
+        func.avg(WatchLog.rating).desc())
+              .first())
 
-        if not common_directors.empty:
-            return common_directors.value_counts().index[0]
-        return None
-    return None
+    return result.director_name or None
 
 
-def get_rewatch_context(df_diary, df_watched_enriched):
-    total_diary = len(df_diary)
-    total_rewatches = df_diary["Rewatch"].sum()
+def get_rewatch_context():
+    result = data_base.session.query(
+        func.count(WatchLog.id).label('total_diary'),
+        func.sum(case((WatchLog.is_rewatch == True, 1), else_=0)).label('total_rewatches')
+    ).first()
+
+    total_diary = result.total_diary or 0
+    total_rewatches = result.total_rewatches or 0
+
     rewatch_rate = (total_rewatches / total_diary) * 100 if total_diary > 0 else 0
 
     if rewatch_rate >= 40:
@@ -85,15 +102,24 @@ def get_rewatch_context(df_diary, df_watched_enriched):
         rewatch_description = f"\"Never look back\" is your motto for life. Your eyes are always on the horizon with {rewatch_rate:.1f}% rewatch rate"
 
     # ------------------------------------------------------------------
-    rewatched_movies = None
-    if df_watched_enriched is not None:
-        df_rewatch = df_diary[df_diary["Rewatch"] == True]
+    result = (data_base.session.query(
+        Movie.title,
+        Movie.poster_url,
+        Movie.release_year,
+        WatchLog.rating
+    ).join(WatchLog, Movie.id == WatchLog.movie_id)
+              .filter(WatchLog.is_rewatch == True)
+              .order_by(WatchLog.watched_date.desc())
+              .all())
 
-        if not df_rewatch.empty:
-            df_movies_rewatch = pandas.merge(df_rewatch, df_watched_enriched[["Name", "Year", "Poster"]],
-                                             on=["Name", "Year"], how="left").sort_values(by="Rating", ascending=False)
-
-            rewatched_movies = df_movies_rewatch[["Name", "Year", "Poster", "Rating"]].to_dict(orient="records")
+    rewatched_movies = []
+    for movie in result:
+        rewatched_movies.append({
+            "name": movie.title,
+            "poster": movie.poster_url,
+            "year": movie.release_year,
+            "rating": movie.rating
+        })
 
     return {
         "rewatch_profile": rewatch_profile,
@@ -102,72 +128,114 @@ def get_rewatch_context(df_diary, df_watched_enriched):
     }
 
 
-def get_streak_context(df_diary, df_watched_enriched):
-    dates = df_diary["Watched Date"].drop_duplicates().sort_values(ignore_index=True)
+def get_streak_context():
+    result = (data_base.session.query(WatchLog.watched_date.label("watch_date"))
+              .distinct()
+              .order_by(WatchLog.watched_date.asc())
+              .all())
 
-    if dates.empty:
-        return {"days": 0, "start": None, "end": None}
+    if not result:
+        return {"days": 0, "start": None, "end": None, "movies": None}
 
-    is_not_consecutive = dates.diff() != pandas.Timedelta(days=1)
+    all_dates = [date.watch_date for date in result]
+    longest_streak = []
+    current_streak = [all_dates[0]]
 
-    streak_ids = is_not_consecutive.cumsum()
+    for i in range(1, len(all_dates)):
+        if all_dates[i] == all_dates[i - 1] + timedelta(days=1):
+            current_streak.append(all_dates[i])
+        else:
+            if len(current_streak) > len(longest_streak):
+                longest_streak = current_streak
+            current_streak = [all_dates[i]]
 
-    streaks = dates.groupby(streak_ids).agg(["count", "min", "max"])
-    longest = streaks.loc[streaks["count"].idxmax()]
+    if len(current_streak) > len(longest_streak):
+        longest_streak = current_streak
 
-    months = {
-        1: "January", 2: "February", 3: "March", 4: "April",
-        5: "May", 6: "June", 7: "July", 8: "August",
-        9: "September", 10: "October", 11: "November", 12: "December"
-    }
+    max_days = len(longest_streak)
+    start_date = longest_streak[0]
+    end_date = longest_streak[-1]
 
-    def format_date(date_obj):
-        if pandas.isna(date_obj):
-            return None
-        return f"{months[int(date_obj.month)]} {int(date_obj.day)}, {int(date_obj.year)}"
+    streak_movies = []
+    if max_days > 1:
+        movies_on_streak = (data_base.session.query(
+            Movie.title,
+            Movie.release_year,
+            Movie.poster_url,
+            WatchLog.rating
+        ).join(WatchLog, Movie.id == WatchLog.movie_id)
+                            .filter(WatchLog.watched_date >= start_date, WatchLog.watched_date <= end_date)
+                            .order_by(WatchLog.rating.desc())
+                            .all())
 
-    streak_movies = None
-    if df_watched_enriched is not None and longest["count"] > 1:
-        streak_mask = (df_diary["Watched Date"] >= longest["min"]) & (df_diary["Watched Date"] <= longest["max"])
-        df_streak_movies = df_diary[streak_mask]
+        for movie in movies_on_streak:
+            streak_movies.append({
+                "name": movie.title,
+                "year": movie.release_year,
+                "poster": movie.poster_url,
+                "rating": movie.rating
+            })
 
-        df_streak_movies = pandas.merge(df_streak_movies, df_watched_enriched[["Name", "Year", "Poster"]],
-                                        on=["Name", "Year"], how="left").sort_values(by="Rating", ascending=False)
-
-        streak_movies = df_streak_movies[["Name", "Year", "Poster", "Rating"]].to_dict(orient="records")
+    def format_date(date):
+        return date.strftime("%B %d, %Y")
 
     return {
-        "days": int(longest["count"]),
-        "start": format_date(longest["min"]),
-        "end": format_date(longest["max"]),
+        "days": max_days,
+        "start": format_date(start_date),
+        "end": format_date(end_date),
         "movies": streak_movies,
     }
 
 
-def get_movie_moment_context(df_diary, df_watched_enriched):
-    df_master = pandas.merge(
-        df_diary[["Name", "Year", "Rating", "Day_Of_Week"]],
-        df_watched_enriched[["Name", "Year", "Genres"]],
-        on=["Name", "Year"]
+def get_movie_moment_context():
+    total_movies = data_base.session.query(func.count(Movie.id)).scalar()
+
+    favorite_day_result = (data_base.session.query(
+        WatchLog.day_of_week.label("day_of_week"),
+        func.count(WatchLog.id).label("day_count")
     )
+                           .group_by(WatchLog.day_of_week)
+                           .order_by(func.count(WatchLog.id).desc())
+                           .first())
 
-    total_movies = len(df_master)
+    favorite_day = favorite_day_result.day_of_week
+    total_from_favorite_day = favorite_day_result.day_count
 
-    favorite_day = df_master["Day_Of_Week"].mode()[0]
-    df_movies_from_favorite_day = df_master[df_master["Day_Of_Week"] == favorite_day].copy()
+    top_genre = (data_base.session.query(Genre.name.label("genre"))
+                 .select_from(WatchLog)
+                 .join(Movie)
+                 .join(Movie.genres)
+                 .filter(WatchLog.day_of_week == favorite_day)
+                 .group_by(Genre.name)
+                 .order_by(func.count(WatchLog.id).desc())
+                 .first())
+    top_genre = top_genre.genre
 
-    total_movies_from_favorite_day = len(df_movies_from_favorite_day)
-    movie_percentage = (total_movies_from_favorite_day / total_movies) * 100
+    (data_base.session.query(
+        Movie.decade.label("decade"),
+        func.avg(WatchLog.rating).label("average_rating"),
+        func.count(WatchLog.id).label("log_count")
+    ).join(WatchLog, Movie.id == WatchLog.movie_id)
+     .group_by(Movie.decade)
+     .having(func.count(WatchLog.id) >= 5)
+     .order_by(func.avg(WatchLog.rating).desc())
+     .first())
 
-    df_movies_from_favorite_day["Genres"] = df_movies_from_favorite_day["Genres"].str.split(",")
-    df_genres_exploded = df_movies_from_favorite_day.explode("Genres")
-    df_genres_exploded["Genres"] = df_genres_exploded["Genres"].str.strip()
+    top_decade = (data_base.session.query(
+        Movie.decade.label("decade"),
+        func.avg(WatchLog.rating).label("average_rating"),
+        func.count(WatchLog.id).label("log_count")
+    )
+                  .select_from(WatchLog)
+                  .join(Movie)
+                  .join(Movie.genres)
+                  .filter(WatchLog.day_of_week == favorite_day, Genre.name == top_genre)
+                  .group_by(Movie.decade)
+                  .order_by(func.avg(WatchLog.rating).desc())
+                  .first())
 
-    top_genre = df_genres_exploded["Genres"].mode()[0]
-    df_final_subset = df_genres_exploded[df_genres_exploded["Genres"] == top_genre].copy()
-
-    df_final_subset["Decade"] = (df_final_subset["Year"] // 10 * 10).astype(str) + "s"
-    top_decade = df_final_subset["Decade"].mode()[0]
+    top_decade = top_decade.decade
+    movie_percentage = (total_from_favorite_day / total_movies) * 100
 
     return {
         "favorite_day": favorite_day.lower(),
@@ -177,19 +245,19 @@ def get_movie_moment_context(df_diary, df_watched_enriched):
     }
 
 
-def get_context(df_watched, df_diary, df_ratings, df_watched_enriched=None):
+def get_context():
     total_movies = {"label": "Movies Watched", "value": get_total_movies()}
     favorite_day = {"label": "Cinema Day", "value": get_favorite_day()}
-    favorite_decade = {"label": "Golden Decade", "value": get_favorite_decade(df_ratings)}
-    average_rating = {"label": "Average Rating", "value": get_average_rating(df_ratings)}
-    favorite_genre = {"label": "Go-to Genre", "value": get_favorite_genre(df_watched_enriched)}
-    favorite_director = {"label": "Resident Director", "value": get_most_frequent_director(df_watched_enriched)}
+    favorite_decade = {"label": "Golden Decade", "value": get_favorite_decade()}
+    average_rating = {"label": "Average Rating", "value": get_average_rating()}
+    favorite_genre = {"label": "Go-to Genre", "value": get_favorite_genre()}
+    favorite_director = {"label": "Resident Director", "value": get_most_frequent_director()}
 
     metric_list = [total_movies, favorite_day, favorite_decade, average_rating, favorite_genre, favorite_director]
 
-    streak_context = get_streak_context(df_diary, df_watched_enriched)
-    rewatch_context = get_rewatch_context(df_diary, df_watched_enriched)
-    movie_context = get_movie_moment_context(df_diary, df_watched_enriched)
+    streak_context = get_streak_context()
+    rewatch_context = get_rewatch_context()
+    movie_context = get_movie_moment_context()
 
     return {
         "metric_list": metric_list,
