@@ -1,10 +1,10 @@
 import os
 import pandas
 
-from .TMDB_Client import TMDBClient
-from .config import FILES_DIR, BASE_DIR
-from .data_base import data_base
-from .models import Movie, Genre, Director, WatchLog
+from app.services.tmdb_client import TMDBClient
+from app.config import FILES_DIR
+from app.data_base import data_base
+from app.models import Movie, Genre, Director, WatchLog
 
 
 def process_diary():
@@ -39,8 +39,6 @@ def process_ratings():
 
     df_ratings = df_ratings.dropna(subset=["Rating", "Year"]).copy()
 
-    df_ratings["Decade"] = (df_ratings["Year"] // 10 * 10).astype(int).astype(str) + "s"
-
     return df_ratings
 
 
@@ -66,9 +64,6 @@ def transform_and_load(movies, df_watched, df_diary):
     db_movies = data_base.session.query(Movie.title, Movie.release_year).all()
     db_movies_set = {(movie.title, movie.release_year) for movie in db_movies}
 
-    print("data_base_movies:", len(db_movies_set))
-    print("movies:", movies)
-
     enrich_list = []
     for movie in movies:
         year = int(movie["release_year"]) if movie["release_year"] else None
@@ -80,16 +75,10 @@ def transform_and_load(movies, df_watched, df_diary):
         client = TMDBClient(os.getenv("API_KEY"))
 
         enriched_data = []
-
-        print("Enriching", len(enrich_list))
-        print("Enriching movies:", enrich_list)
-
         enriched_data = client.fetch_movies_parallel(enrich_list)
 
-        print("Enriched data:", enriched_data)
         df_enriched = pandas.DataFrame(enriched_data)
         df_watched_enriched = df_watched.merge(df_enriched, how="left", on=["Name", "Year"]).dropna(subset="Genres")
-        print("df_watched_enriched:", df_watched_enriched.head())
 
         for i, movie in df_watched_enriched.iterrows():
             save_enriched_movie(movie)
@@ -120,13 +109,15 @@ def save_enriched_movie(movie):
             data_base.session.flush()
         director_references.append(db_director)
 
+    decade_str = f"{(int(movie["Year"]) // 10 * 10)}s"
     new_movie = Movie(
         title=movie["Name"],
         release_year=movie["Year"],
         poster_url=movie["Poster"],
         overview=movie["Overview"],
         country=movie["Country"],
-        original_language=movie["Original Language"]
+        original_language=movie["Original Language"],
+        decade=decade_str
     )
 
     new_movie.genres = genre_references
@@ -141,6 +132,7 @@ def save_diary_logs(df_diary):
     movie_id_map = {(movie.title, movie.release_year): movie.id for movie in db_movies}
 
     WatchLog.query.delete()
+
     for i, movie in df_diary.iterrows():
         title = movie["Name"]
         release_year = int(movie["Year"]) if movie["Year"] else None
@@ -151,7 +143,11 @@ def save_diary_logs(df_diary):
                 movie_id=movie_id,
                 watched_date=movie["Watched Date"],
                 rating=movie["Rating"],
-                is_rewatch=movie["Rewatch"]
+                is_rewatch=movie["Rewatch"],
+                year_month = str(movie["Year_Month"]),
+                watched_year = int(movie["Watched_Year"]),
+                day_of_week = movie["Day_Of_Week"],
+                time_lag = int(movie["Time_Lag"])
             )
             data_base.session.add(new_watch_log)
 

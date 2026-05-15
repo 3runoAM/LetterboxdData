@@ -1,17 +1,28 @@
 import os
 import numpy as np
 import plotly.express as px
+from sqlalchemy import func
 
+from app import data_base
 from app.config import STOPWORDS_OVERVIEW
 from wordcloud import WordCloud, STOPWORDS
 from PIL import Image, ImageOps
 
+from app.models import WatchLog, Movie
 
-def plot_rewatch_rate(df_diary):
-    rewatches = df_diary["Rewatch"].value_counts().reset_index()
-    rewatches.columns = ["Rewatch", "Amount"]
 
-    rewatches["Rewatch"] = rewatches["Rewatch"].map({True: "Rewatch", False: "First time"})
+def plot_rewatch_rate():
+    result = (data_base.session.query(
+        WatchLog.is_rewatch.label("is_rewatch"),
+        func.count(WatchLog.id).label("count")
+    )
+                      .group_by(WatchLog.is_rewatch)
+                      .all())
+
+    rewatches = []
+    for rewatch in result:
+        rewatch_type = "Rewatch" if rewatch.is_rewatch else "First time"
+        rewatches.append({"Rewatch": rewatch_type, "Amount": rewatch.count})
 
     fig = px.pie(rewatches, values="Amount", names="Rewatch", color="Rewatch",
                  color_discrete_map={"Rewatch": "#f37b01", "First time": "#3eb7eb"}, hole=0.4)
@@ -29,15 +40,17 @@ def plot_rewatch_rate(df_diary):
     return fig.to_html(full_html=False)
 
 
-def plot_overview_wordcloud(df_watched_enriched):
+def plot_overview_wordcloud():
     try:
-        overviews_joined = " ".join(df_watched_enriched["Overview"].dropna())
+        result = (data_base.session.query(Movie.overview.label("overview"))
+                     .all())
+
+        overviews_joined = " ".join([overview.overview for overview in result])
 
         stopwords = set(STOPWORDS)
         stopwords.update(STOPWORDS_OVERVIEW)
 
         image = Image.open("app/static/masks/letterboxd_logo_mask.png").convert("L")
-
         mask = np.array(image)
 
         wordcloud = WordCloud(
@@ -56,9 +69,17 @@ def plot_overview_wordcloud(df_watched_enriched):
         print(f"ERRO AO GERAR WORD CLOUD: {e.with_traceback(e.__traceback__)}")
 
 
-def plot_movie_map(df_watched_enriched):
-    country_counts = df_watched_enriched["Country"].value_counts().reset_index()
-    country_counts.columns = ["Country", "Count"]
+def plot_movie_map():
+    result = data_base.session.query(
+        Movie.country,
+        func.count(Movie.id).label("count")
+    ).filter(Movie.country.isnot(None)) \
+        .group_by(Movie.country) \
+        .all()
+
+    country_counts = []
+    for country, count in result:
+        country_counts.append({"Country": country, "Count": count})
 
     fig = px.scatter_geo(country_counts, locations="Country", locationmode="country names", size="Count", color="Count",
                          hover_name="Country", size_max=40,

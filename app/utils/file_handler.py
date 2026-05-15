@@ -1,7 +1,7 @@
 import os
 import pandas as pandas
 from werkzeug.utils import secure_filename
-from .config import FILES_DIR, EXPECTED_DATA
+from app.config import FILES_DIR, EXPECTED_DATA
 
 def validate_files(files: list):
     file_names = [file.filename for file in files if file.filename]
