@@ -1,6 +1,8 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 
+from app.services.context_engine import get_context
 from app.services.etl_service import get_processed_data, transform_and_load
+from app.services.graph_builder import plot_overview_wordcloud, plot_rewatch_rate, plot_movie_map
 from app.utils.file_handler import validate_files, save_files, is_data_available
 
 main = Blueprint("main", __name__)
@@ -44,15 +46,14 @@ def process_data():
 @main.route("/profile", methods=["GET"])
 def profile_route():
     try:
+        context = get_context()
+        rewatch_rate_graph = plot_rewatch_rate()
+        movie_map_graph = plot_movie_map()
 
-        # context = get_context()
-        # rewatch_rate_graph = plot_rewatch_rate(df_diary)
-        # movie_map_graph = plot_movie_map(df_watched_enriched)
-        #
-        # return render_template("profile.html", context=context, rewatch_rate=rewatch_rate_graph,
-        #                        movie_map=movie_map_graph)
+        plot_overview_wordcloud()
 
-        return render_template("badges.html")
+        return render_template("profile.html", context=context, rewatch_rate=rewatch_rate_graph,
+                               movie_map=movie_map_graph)
 
     except FileNotFoundError:
         flash("Data files not found. Please upload your data again.")
