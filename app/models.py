@@ -31,6 +31,7 @@ class Movie(data_base.Model):
     overview = data_base.Column(data_base.Text)
     original_language = data_base.Column(data_base.String(10))
     country = data_base.Column(data_base.String(100))
+    decade = data_base.Column(data_base.String(10))
 
     genres = data_base.relationship('Genre', secondary=movie_genres, backref='movies')
     directors = data_base.relationship('Director', secondary=movie_directors, backref='movies')
@@ -43,5 +44,9 @@ class WatchLog(data_base.Model):
     watched_date = data_base.Column(data_base.Date, nullable=False)
     rating = data_base.Column(data_base.Float)
     is_rewatch = data_base.Column(data_base.Boolean, default=False)
+    year_month = data_base.Column(data_base.String(7))
+    watched_year = data_base.Column(data_base.Integer)
+    day_of_week = data_base.Column(data_base.String(20))
+    time_lag = data_base.Column(data_base.Integer)
 
     movie = data_base.relationship('Movie', backref='logs')
