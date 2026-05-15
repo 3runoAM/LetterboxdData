@@ -45,7 +45,7 @@ def process_data():
 def profile_route():
     try:
 
-        # context = get_context(df_watched, df_diary, df_rating, df_watched_enriched)
+        # context = get_context()
         # rewatch_rate_graph = plot_rewatch_rate(df_diary)
         # movie_map_graph = plot_movie_map(df_watched_enriched)
         #

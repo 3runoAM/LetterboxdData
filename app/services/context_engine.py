@@ -26,9 +26,7 @@ def get_favorite_day():
 
 
 def get_favorite_decade():
-    result = (data_base.session.query(
-        Movie.decade.label("decade"),
-        ).distinct(Movie.decade))
+
 
     return None
 
