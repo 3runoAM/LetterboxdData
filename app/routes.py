@@ -37,20 +37,23 @@ def process_data():
 
         transform_and_load(movies, df_watched, df_diary)
 
+        plot_overview_wordcloud()
+
         return {"status": "success"}, 200
     except Exception as e:
         print(f"Erro no processamento: {e}")
         return {"status": "error", "message": str(e)}, 500
+
 # -----------------------------------------------------------------------------------------------------------------------
 
 @main.route("/profile", methods=["GET"])
 def profile_route():
     try:
         context = get_context()
-        rewatch_rate_graph = plot_rewatch_rate()
-        movie_map_graph = plot_movie_map()
 
-        plot_overview_wordcloud()
+        rewatch_rate_graph = plot_rewatch_rate()
+
+        movie_map_graph = plot_movie_map()
 
         return render_template("profile.html", context=context, rewatch_rate=rewatch_rate_graph,
                                movie_map=movie_map_graph)

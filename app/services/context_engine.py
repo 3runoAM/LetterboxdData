@@ -1,9 +1,6 @@
 from datetime import timedelta
 
-import pandas
-import calendar
 from sqlalchemy import func, extract, case
-from sqlalchemy.ext.asyncio import result
 
 from app.data_base import data_base
 from app.models import Movie, Genre, Director, WatchLog
@@ -211,22 +208,11 @@ def get_movie_moment_context():
                  .first())
     top_genre = top_genre.genre
 
-    (data_base.session.query(
-        Movie.decade.label("decade"),
-        func.avg(WatchLog.rating).label("average_rating"),
-        func.count(WatchLog.id).label("log_count")
-    ).join(WatchLog, Movie.id == WatchLog.movie_id)
-     .group_by(Movie.decade)
-     .having(func.count(WatchLog.id) >= 5)
-     .order_by(func.avg(WatchLog.rating).desc())
-     .first())
-
     top_decade = (data_base.session.query(
         Movie.decade.label("decade"),
         func.avg(WatchLog.rating).label("average_rating"),
         func.count(WatchLog.id).label("log_count")
-    )
-                  .select_from(WatchLog)
+    ).select_from(WatchLog)
                   .join(Movie)
                   .join(Movie.genres)
                   .filter(WatchLog.day_of_week == favorite_day, Genre.name == top_genre)
@@ -238,8 +224,8 @@ def get_movie_moment_context():
     movie_percentage = (total_from_favorite_day / total_movies) * 100
 
     return {
-        "favorite_day": favorite_day.lower(),
-        "favorite_genre": top_genre.lower(),
+        "favorite_day": favorite_day.capitalize(),
+        "favorite_genre": top_genre.capitalize(),
         "favorite_decade": top_decade,
         "movie_percentage": round(movie_percentage, 1),
     }
