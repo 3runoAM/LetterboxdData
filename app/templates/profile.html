@@ -48,7 +48,7 @@
                 {{ movie_list("Rewatch", context.rewatch_context.rewatched_movies, "rewatch") }}
             </section>
 
-            {% from "partials/svg_macros.html" import render_genre_icon, render_day_icon %}
+            {% from "partials/svg_macros.html" import render_genre_icon, render_day_icon, render_decade_icon %}
 
             <section class="chart-container movie-moment">
                 <div class="circles-container">
@@ -69,7 +69,9 @@
 
                         <div>
                             <p class="movie-moment-label decade">{{ context.movie_context.favorite_decade }}</p>
-                            <img src="../static/images/ilustracaofita.png" class="circle decade"/>
+                            <div class="circle decade">
+                                {{ render_decade_icon(context.movie_context.favorite_decade) }}
+                            </div>
                         </div>
                     </div>
                 </div>
