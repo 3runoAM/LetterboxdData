@@ -48,13 +48,15 @@
                 {{ movie_list("Rewatch", context.rewatch_context.rewatched_movies, "rewatch") }}
             </section>
 
-            {% from "partials/macros.html" import render_genre_icon %}
+            {% from "partials/svg_macros.html" import render_genre_icon, render_day_icon %}
 
             <section class="chart-container movie-moment">
                 <div class="circles-container">
                     <div>
+                        <div class="circle day">
+                            {{ render_day_icon(context.movie_context.favorite_day) }}
+                        </div>
                         <p class="movie-moment-label day">{{ context.movie_context.favorite_day }}</p>
-                        <img src="../static/images/ilustracaosol.png" class="circle day"/>
                     </div>
 
                     <div>
