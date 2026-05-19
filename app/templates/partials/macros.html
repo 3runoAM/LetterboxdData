@@ -1,7 +1,7 @@
 {% macro metric_card(value, label) %}
     <div class="metric-container">
-        <p class="metric-value">{{ value if value != None else "-"}}</p>
-        <p class="metric-label">{{ label  }}</p>
+        <p class="metric-value">{{ value if value != None else "-" }}</p>
+        <p class="metric-label">{{ label }}</p>
     </div>
 {% endmacro %}
 
@@ -29,8 +29,9 @@
                         <img src="{{ movie.poster }}" alt="{{ movie.name }} poster" title="{{ movie.name }}">
                         <div class="movie-info">
                             <h3 title="{{ movie.name }}">{{ movie.name }}</h3>
-                            <p>{{ movie.Year }}</p>
-                            <div class="stars" style="--rating: {{ movie.rating }};" aria-label="Nota: {{ movie.rating }} de 5" title="{{ movie.rating }}"></div>
+                            <p>{{ movie.year }}</p>
+                            <div class="stars" style="--rating: {{ movie.rating }};"
+                                 aria-label="Nota: {{ movie.rating }} de 5" title="{{ movie.rating }}"></div>
                         </div>
                     </li>
                 {% endfor %}

@@ -48,22 +48,30 @@
                 {{ movie_list("Rewatch", context.rewatch_context.rewatched_movies, "rewatch") }}
             </section>
 
+            {% from "partials/svg_macros.html" import render_genre_icon, render_day_icon, render_decade_icon %}
+
             <section class="chart-container movie-moment">
                 <div class="circles-container">
                     <div>
+                        <div class="circle day">
+                            {{ render_day_icon(context.movie_context.favorite_day) }}
+                        </div>
                         <p class="movie-moment-label day">{{ context.movie_context.favorite_day }}</p>
-                        <img src="../static/images/ilustracaosol.png" class="circle day"/>
                     </div>
 
                     <div>
                         <div>
                             <p class="movie-moment-label genre">{{ context.movie_context.favorite_genre }}</p>
-                            <img src="../static/images/ilustracaopipoca.png" class="circle genre"/>
+                            <div class="circle genre">
+                                 {{ render_genre_icon(context.movie_context.favorite_genre) }}
+                            </div>
                         </div>
 
                         <div>
                             <p class="movie-moment-label decade">{{ context.movie_context.favorite_decade }}</p>
-                            <img src="../static/images/ilustracaofita.png" class="circle decade"/>
+                            <div class="circle decade">
+                                {{ render_decade_icon(context.movie_context.favorite_decade) }}
+                            </div>
                         </div>
                     </div>
                 </div>
