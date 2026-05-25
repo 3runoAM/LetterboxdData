@@ -1,0 +1,11 @@
+.panel {
+    display: none;
+}
+
+.panel.active {
+    display: block;
+}
+
+.view-button.active {
+    
+}

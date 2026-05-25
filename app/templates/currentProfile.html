@@ -3,17 +3,39 @@
     <head>
         <meta charset="UTF-8">
         <title>Current Vibe</title>
-        <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link rel="icon" href="{{ url_for("static", filename="images/favicon.png") }}" type="image/png">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
               rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/currentProfile.css") }}">
+
     </head>
     <body>
         {% include "partials/nav.html" %}
 
+        <div>
+            <button class="view-button active" data-target="panel-week">Esta Semana</button>
+            <button class="view-button" data-target="panel-month">Últimos 30 Dias</button>
+            <button class="view-button" data-target="panel-year">Último Ano</button>
+        </div>
 
+        <div>
+            <div id="panel-week" class="panel active">
+                <p>SEMANA MOSTRADA</p>
+            </div>
+
+            <div id="panel-month" class="panel">
+                <p>MES MOSTRADO</p>
+            </div>
+
+            <div id="panel-year" class="panel">
+                <p>ANO MOSTRADO</p>
+            </div>
+        </div>
+
+        <script src="{{ url_for("static", filename="javascript/toggler.js") }}"></script>
     </body>
 </html>
