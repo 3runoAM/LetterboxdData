@@ -1,18 +1,16 @@
-from datetime import timedelta
-
-from sqlalchemy import func, extract, case
-
+import calendar
+from datetime import timedelta, date
+from sqlalchemy import func, case
 from app.data_base import data_base
 from app.models import Movie, Genre, Director, WatchLog
 
 
+# PROFILE CONTEXT ------------------------------------------------------------------------------------------------------
 def get_total_movies():
     return data_base.session.query(Movie).count() or None
 
-
 def get_average_rating():
     return round(data_base.session.query(func.avg(WatchLog.rating)).scalar(), 1) or None
-
 
 def get_favorite_day():
     result = (data_base.session.query(
@@ -23,7 +21,6 @@ def get_favorite_day():
               .first())
 
     return result.day_name or None
-
 
 def get_favorite_decade():
     result = (data_base.session.query(
@@ -37,7 +34,6 @@ def get_favorite_decade():
               .first())
 
     return result.decade or None
-
 
 def get_favorite_genre():
     result = (data_base.session.query(
@@ -56,7 +52,6 @@ def get_favorite_genre():
 
     return result.genre_name or None
 
-
 def get_most_frequent_director():
     result = (data_base.session.query(
         Director.name.label("director_name"),
@@ -72,7 +67,6 @@ def get_most_frequent_director():
               .first())
 
     return result.director_name or None
-
 
 def get_rewatch_context():
     result = data_base.session.query(
@@ -123,7 +117,6 @@ def get_rewatch_context():
         "rewatch_description": rewatch_description,
         "rewatched_movies": rewatched_movies
     }
-
 
 def get_streak_context():
     result = (data_base.session.query(WatchLog.watched_date.label("watch_date"))
@@ -183,7 +176,6 @@ def get_streak_context():
         "movies": streak_movies,
     }
 
-
 def get_movie_moment_context():
     total_movies = data_base.session.query(func.count(Movie.id)).scalar()
 
@@ -230,8 +222,7 @@ def get_movie_moment_context():
         "movie_percentage": round(movie_percentage, 1),
     }
 
-
-def get_context():
+def get_profile_context():
     total_movies = {"label": "Movies Watched", "value": get_total_movies()}
     favorite_day = {"label": "Cinema Day", "value": get_favorite_day()}
     favorite_decade = {"label": "Golden Decade", "value": get_favorite_decade()}
@@ -251,3 +242,44 @@ def get_context():
         "rewatch_context": rewatch_context,
         "movie_context": movie_context,
     }
+
+# CURRENT PROFILE CONTEXT ----------------------------------------------------------------------------------------------
+
+def get_current_time():
+    today_obj = date.today()
+
+    days_until_sunday = (today_obj.weekday() + 1) % 7
+
+    start_week = today_obj - timedelta(days=days_until_sunday)
+    week_ends = start_week + timedelta(days=6)
+
+    month_start = date(today_obj.year, today_obj.month, 1)
+
+    last_day_month = calendar.monthrange(today_obj.year, today_obj.month)[1]
+    month_ends = date(today_obj.year, today_obj.month, last_day_month)
+
+    year_start = date(today_obj.year, 1, 1)
+    year_ends = date(today_obj.year, 12, 31)
+
+    return {
+        "week": {
+            "start": start_week,
+            "end": week_ends
+        },
+        "month": {
+            "start": month_start,
+            "end": month_ends
+        },
+        "year": {
+            "start": year_start,
+            "end": year_ends
+        }
+    }
+
+
+def get_current_profile_context():
+    print("current_profile_context")
+
+    print(get_current_time())
+
+    return None

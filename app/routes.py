@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 
-from app.services.context_engine import get_context
+from app.services.context_engine import get_profile_context, get_current_profile_context
 from app.services.etl_service import get_processed_data, transform_and_load
 from app.services.graph_builder import plot_overview_wordcloud, plot_rewatch_rate, plot_movie_map
 from app.utils.file_handler import validate_files, save_files, is_data_available
@@ -49,7 +49,7 @@ def process_data():
 @main.route("/profile", methods=["GET"])
 def profile_route():
     try:
-        context = get_context()
+        context = get_profile_context()
 
         rewatch_rate_graph = plot_rewatch_rate()
 
@@ -71,6 +71,9 @@ def profile_route():
 
 @main.route("/current-profile", methods=["GET"])
 def current_profile():
+    context = get_current_profile_context()
+
+
     return render_template("currentProfile.html")
 
 
