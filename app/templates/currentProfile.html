@@ -6,35 +6,62 @@
         <link rel="icon" href="{{ url_for("static", filename="images/favicon.png") }}" type="image/png">
         <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
         <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
               rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for("static", filename="css/currentProfile.css") }}">
-
     </head>
     <body>
+        {% from "partials/macros.html" import movie_list, metric_card %}
         {% include "partials/nav.html" %}
 
-        <div>
-            <button class="view-button active" data-target="panel-week">SEMANA</button>
-            <button class="view-button" data-target="panel-month">MÊS</button>
-            <button class="view-button" data-target="panel-year">ANO</button>
-        </div>
-
-        <div>
-            <div id="panel-week" class="panel active">
-                <p>SEMANA MOSTRADA</p>
+        <main class="container">
+            <div class="button-container">
+                <button class="view-button active" data-target="panel-week">WEEK</button>
+                <span class="separator">|</span>
+                <button class="view-button" data-target="panel-month">MONTH</button>
+                <span class="separator" >|</span>
+                <button class="view-button" data-target="panel-year">YEAR</button>
             </div>
 
-            <div id="panel-month" class="panel">
-                <p>MES MOSTRADO</p>
-            </div>
+            <section id="panel-week" class="panel active">
+                <section class="metrics-section">
+                    {% for metric in context.metrics_list_week %}
+                        {{ metric_card(metric.value, metric.label) }}
+                    {% endfor %}
+                </section>
 
-            <div id="panel-year" class="panel">
-                <p>ANO MOSTRADO</p>
-            </div>
-        </div>
+                <div class="space"></div>
+
+                {{ movie_list("Watched This Week", context.watched_movies.watched_this_week)}}
+            </section>
+
+            <section id="panel-month" class="panel">
+                <section class="metrics-section">
+                    {% for metric in context.metrics_list_month %}
+                        {{ metric_card(metric.value, metric.label) }}
+                    {% endfor %}
+                </section>
+
+                <div class="space"></div>
+
+                {{ movie_list("Watched This Month", context.watched_movies.watched_this_month)}}
+            </section>
+
+            <section id="panel-year" class="panel">
+                <section class="metrics-section">
+                    {% for metric in context.metrics_list_year %}
+                        {{ metric_card(metric.value, metric.label) }}
+                    {% endfor %}
+                </section>
+
+                <div class="space"></div>
+
+                {{ movie_list("Watched This Year", context.watched_movies.watched_this_year)}}
+            </section>
+        </main>
 
         <script src="{{ url_for("static", filename="javascript/toggler.js") }}"></script>
     </body>
