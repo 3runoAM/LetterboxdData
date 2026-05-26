@@ -1,0 +1,124 @@
+:root {
+    --primary-color: #00d94f;
+    --secondary-color: #3fbcf2;
+    --accent-color: #fc7e00;
+    --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
+    --text-primary: #edeff1;
+    --text-secondary: #A9BBCC;
+    --background-primary: #202830;
+    --background-secondary: #14181c;
+
+    /*Fontes*/
+    --graphik: 'Graphik', sans-serif;
+    --libre-caslon: "Libre Caslon Text", sans-serif;
+    --yantramanav: "Yantramanav", sans-serif;
+    --geologica: "Geologica", sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2.5rem;
+    gap: 1rem;
+    max-width: 100%;
+}
+
+.panels-container {
+    width: 100%;
+}
+
+.panel {
+    display: none;
+    width: 100%;
+}
+
+.panel.active {
+    display: block;
+}
+
+.view-button {
+    background: none;
+    border: none;
+    font: 500 1.5rem var(--libre-caslon);
+    color: var(--text-secondary);
+    text-shadow: 0 1px 2px #A9BBCC;
+    cursor: pointer;
+    width: 15rem;
+    height: 1.8rem;
+}
+
+.view-button.active {
+    font-weight: bolder;
+    color: var(--text-primary);
+    border-radius: 10px;
+}
+
+.view-button.active[data-target="panel-week"] {
+    background-color: rgba(252, 162, 0, 0.2);
+}
+
+.view-button.active[data-target="panel-month"] {
+    background-color: rgba(0, 217, 79, 0.2);
+}
+
+.view-button.active[data-target="panel-year"] {
+    background-color: rgba(63, 186, 242, 0.2);
+}
+
+.separator {
+    color: var(--text-secondary);
+    text-shadow: 0 1px 2px #A9BBCC;
+}
+
+.space {
+    padding: 1.5rem;
+}
+
+.metrics-section {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+    padding: 1.5rem;
+}
+
+.metric-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    text-shadow: 0 0 0.2rem var(--secondary-color);
+}
+
+.metric-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+}
+
+.movie-section {
+    align-items: center;
+}
+
+.movie-list {
+    max-width: 80rem;
+    align-items: center;
+}
+
+

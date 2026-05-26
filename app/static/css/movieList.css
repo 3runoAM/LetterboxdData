@@ -119,3 +119,12 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+
+.no-movies {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 11.3rem;
+    height: 30rem;
+}
