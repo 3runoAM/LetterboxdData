@@ -57,10 +57,6 @@ def profile_route():
 
         return render_template("profile.html", context=context, rewatch_rate=rewatch_rate_graph,
                                movie_map=movie_map_graph)
-
-    except FileNotFoundError:
-        flash("Data files not found. Please upload your data again.")
-        return redirect(url_for("main.main_route"))
     except Exception as e:
         print(f"Data processing error: {e}")
         return redirect(url_for("main.main_route"))
@@ -71,10 +67,17 @@ def profile_route():
 
 @main.route("/current-profile", methods=["GET"])
 def current_profile():
-    context = get_current_profile_context()
+    try:
+        context = get_current_profile_context()
 
 
-    return render_template("currentProfile.html")
+    except Exception as e:
+        print(f"Data processing error: {e}")
+        return redirect(url_for("main.main_route"))
+
+
+    return render_template("currentProfile.html",
+                           context=context)
 
 
 # -----------------------------------------------------------------------------------------------------------------------
