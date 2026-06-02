@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="{{ url_for("static", filename="css/nav.css") }}">
         <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
         <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/likedDisliked.css") }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
@@ -14,7 +15,7 @@
         <link rel="stylesheet" href="{{ url_for("static", filename="css/currentProfile.css") }}">
     </head>
     <body>
-        {% from "partials/macros.html" import movie_list, metric_card %}
+        {% from "partials/macros.html" import movie_list, metric_card, liked_disliked %}
         {% include "partials/nav.html" %}
 
         <main class="container">
@@ -33,9 +34,16 @@
                     {% endfor %}
                 </section>
 
-                <div class="space"></div>
-
                 {{ movie_list("Watched This Week", context.watched_movies.watched_this_week)}}
+
+                <div class="chart-container">
+                    {{ liked_disliked(context.most_liked_disliked_week.most_liked_movie, context.most_liked_disliked_week.most_disliked_movie) }}
+
+
+                    <section>
+                        <h3>OUTRA SECTION AQUI</h3>
+                    </section>
+                </div>
             </section>
 
             <section id="panel-month" class="panel">
@@ -45,9 +53,16 @@
                     {% endfor %}
                 </section>
 
-                <div class="space"></div>
-
                 {{ movie_list("Watched This Month", context.watched_movies.watched_this_month)}}
+
+                <div class="chart-container">
+                     {{ liked_disliked(context.most_liked_disliked_month.most_liked_movie, context.most_liked_disliked_month.most_disliked_movie) }}
+
+                    <section>
+                        <h3>OUTRA SECTION AQUI</h3>
+                    </section>
+                </div>
+
             </section>
 
             <section id="panel-year" class="panel">
@@ -57,9 +72,16 @@
                     {% endfor %}
                 </section>
 
-                <div class="space"></div>
-
                 {{ movie_list("Watched This Year", context.watched_movies.watched_this_year)}}
+
+                <div class="chart-container">
+                    {{ liked_disliked(context.most_liked_disliked_year.most_liked_movie, context.most_liked_disliked_year.most_disliked_movie) }}
+
+                    <section>
+                        <h3>OUTRA SECTION AQUI</h3>
+                    </section>
+                </div>
+
             </section>
         </main>
 
