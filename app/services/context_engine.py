@@ -1,5 +1,5 @@
 import calendar
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import timedelta, date
 from sqlalchemy import func, case
 from sqlalchemy.orm import joinedload
@@ -344,14 +344,11 @@ def get_favorite_genre_per_period(watched_movies):
 
         all_genres = []
         for movie in movies:
-            all_genres.extend(movie.get("genres", []))
+            all_genres.extend(movie.get("genres"))
 
-        if not all_genres:
-            return None
+        genre_count = Counter(all_genres)
 
-        genre_counts = Counter(all_genres)
-
-        return genre_counts.most_common(1)[0][0]
+        return genre_count.most_common(1)[0][0]
 
     fav_genre_week = calculate_top_genre(watched_movies.get("watched_this_week"))
     fav_genre_month = calculate_top_genre(watched_movies.get("watched_this_month"))
@@ -359,10 +356,26 @@ def get_favorite_genre_per_period(watched_movies):
 
     return fav_genre_year, fav_genre_month, fav_genre_week
 
+def get_favorite_decade_per_period(watched_movies):
+    def calculate_favorite_decade(movies):
+        if not movies:
+            return None
+
+        decades = [(movie.get("year") // 10) * 10 for movie in movies]
+        decade_count = Counter(decades)
+
+        return decade_count.most_common(1)[0][0]
+
+    fav_decade_week = calculate_favorite_decade(watched_movies.get("watched_this_week"))
+    fav_decade_month = calculate_favorite_decade(watched_movies.get("watched_this_month"))
+    fav_decade_year = calculate_favorite_decade(watched_movies.get("watched_this_year"))
+
+    return fav_decade_week, fav_decade_month, fav_decade_year
+
 def get_liked_disliked_per_period(watched_movies):
     def calculate_liked_disliked(movies):
         if not movies:
-            return None, None
+            return None
 
         movies.sort(key=lambda x: x["watched_date"], reverse=True)
 
@@ -403,21 +416,25 @@ def get_current_profile_context():
     total_year, total_month, total_week = get_total_movies_per_period(watched_movies)
     average_year, average_month, average_week = get_average_rating_per_period(watched_movies)
     fav_genre_year, fav_genre_month, fav_genre_week = get_favorite_genre_per_period(watched_movies)
+    fav_decade_week, fav_decade_month, fav_decade_year = get_favorite_decade_per_period(watched_movies)
 
     total_movies_year = {"label": "Movies Watched", "value": total_year}
     average_year = {"label": "Average Rating", "value": average_year}
     fav_genre_year = {"label": "Go-to Genre", "value": fav_genre_year}
-    metrics_list_year = [total_movies_year, average_year, fav_genre_year]
+    fav_decade_year = {"label": "Golden Decade", "value": fav_decade_year}
+    metrics_list_year = [total_movies_year, average_year, fav_genre_year, fav_decade_year]
 
     total_movies_month = {"label": "Movies Watched", "value": total_month}
     average_month = {"label": "Average Rating", "value": average_month}
     fav_genre_month = {"label": "Go-to Genre", "value": fav_genre_month}
-    metrics_list_month = [total_movies_month, average_month, fav_genre_month]
+    fav_decade_month = {"label": "Golden Decade", "value": fav_decade_month}
+    metrics_list_month = [total_movies_month, average_month, fav_genre_month, fav_decade_month]
 
     total_movies_week = {"label": "Movies Watched", "value": total_week}
     average_week = {"label": "Average Rating", "value": average_week}
     fav_genre_week = {"label": "Go-to Genre", "value": fav_genre_week}
-    metrics_list_week = [total_movies_week, average_week, fav_genre_week]
+    fav_decade_week = {"label": "Golden Decade", "value": fav_decade_week}
+    metrics_list_week = [total_movies_week, average_week, fav_genre_week, fav_decade_week]
 
     most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year = get_liked_disliked_per_period(watched_movies)
 
