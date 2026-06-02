@@ -16,8 +16,8 @@ def plot_rewatch_rate():
         WatchLog.is_rewatch.label("is_rewatch"),
         func.count(WatchLog.id).label("count")
     )
-                      .group_by(WatchLog.is_rewatch)
-                      .all())
+              .group_by(WatchLog.is_rewatch)
+              .all())
 
     rewatches = []
     for rewatch in result:
@@ -43,7 +43,7 @@ def plot_rewatch_rate():
 def plot_overview_wordcloud():
     try:
         result = (data_base.session.query(Movie.overview.label("overview"))
-                     .all())
+                  .all())
 
         overviews_joined = " ".join([overview.overview for overview in result])
 
@@ -93,3 +93,55 @@ def plot_movie_map():
                       margin={"r": 0, "t": 0, "l": 0, "b": 0}, coloraxis_showscale=False)
 
     return fig.to_html(full_html=False)
+
+
+def plot_time_lag_per_period(watched_movies, time_lag_averages):
+    def plot_time_lag(movies, time_lag_average):
+        time_lags = [movie.get("time_lag") for movie in movies]
+
+        fig = px.histogram(
+            x=time_lags,
+            nbins=20,
+            labels={'x': 'Years between Release and Watch Date', 'y': 'Movie Count'},
+            color_discrete_sequence=['#3fbcf2']
+        )
+
+        fig.add_vline(
+            x=time_lag_average,
+            line_dash="dash",
+            line_width=2,
+            line_color="#00d94f",
+            annotation_text=f"Average: {time_lag_average:.1f} years",
+            annotation_position="top right",
+            annotation_font=dict(color="#fc7e00", size=12)
+        )
+
+        fig.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#fff"),
+            xaxis=dict(
+                title="Time Lag (Years)",
+                showgrid=False,
+                linecolor="#A9BBCC"
+            ),
+            yaxis=dict(
+                title="Number of Movies",
+                showgrid=True,
+                gridcolor="rgba(255,255,255,0.1)"
+            ),
+            bargap=0.15,
+            margin={"r": 10, "t": 30, "l": 10, "b": 10}
+        )
+
+        return fig
+
+    time_lag_week = plot_time_lag(watched_movies.get("watched_this_week"), time_lag_averages[0])
+    time_lag_month = plot_time_lag(watched_movies.get("watched_this_month"), time_lag_averages[1])
+    time_lag_year = plot_time_lag(watched_movies.get("watched_this_year"), time_lag_averages[2])
+
+    return {
+        "time_lag_week": time_lag_week.to_html(full_html=False),
+        "time_lag_month": time_lag_month.to_html(full_html=False),
+        "time_lag_year": time_lag_year.to_html(full_html=False)
+    }
