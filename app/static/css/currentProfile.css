@@ -17,8 +17,9 @@
 
 .container {
     display: flex;
+    width: 100%;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 4rem;
     text-align: center;
     margin-bottom: 2rem;
 }
@@ -39,10 +40,13 @@
 .panel {
     display: none;
     width: 100%;
+
 }
 
 .panel.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 6rem;
 }
 
 .view-button {
@@ -122,3 +126,12 @@
 }
 
 
+.horizontal-line-movie {
+    width: 80%;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    gap: 10rem;
+}
