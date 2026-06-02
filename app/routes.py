@@ -41,7 +41,7 @@ def process_data():
 
         return {"status": "success"}, 200
     except Exception as e:
-        print(f"Erro no processamento: {e}")
+        print(f"Data processing error: {e}")
         return {"status": "error", "message": str(e)}, 500
 
 # -----------------------------------------------------------------------------------------------------------------------
@@ -69,16 +69,12 @@ def profile_route():
 def current_profile():
     try:
         context = get_current_profile_context()
-
-
     except Exception as e:
         print(f"Data processing error: {e}")
         return redirect(url_for("main.main_route"))
 
-
     return render_template("currentProfile.html",
                            context=context)
-
 
 # -----------------------------------------------------------------------------------------------------------------------
 

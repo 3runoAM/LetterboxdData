@@ -1,0 +1,45 @@
+:root {
+    --primary-color: #00d94f;
+    --secondary-color: #3fbcf2;
+    --accent-color: #fc7e00;
+    --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
+    --text-primary: #edeff1;
+    --text-secondary: #A9BBCC;
+    --background-primary: #202830;
+    --background-secondary: #14181c;
+
+    /*Fontes*/
+    --graphik: 'Graphik', sans-serif;
+    --libre-caslon: "Libre Caslon Text", sans-serif;
+    --yantramanav: "Yantramanav", sans-serif;
+    --geologica: "Geologica", sans-serif;
+}
+
+.liked-disliked-section {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.liked-dislike-section > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.taste-name {
+    text-transform: uppercase;
+    font-family: var(--yantramanav);
+}
+
+.liked-disliked-poster {
+    border-radius: 1rem;
+    width: 15rem;
+}
+
+.bad_rating {
+   border: 0.4rem solid #de1643;
+}
+
+.good_rating {
+    border: 0.4rem solid #23ee70;
+}
