@@ -359,6 +359,38 @@ def get_favorite_genre_per_period(watched_movies):
 
     return fav_genre_year, fav_genre_month, fav_genre_week
 
+def get_liked_disliked_per_period(watched_movies):
+    def calculate_liked_disliked(movies):
+        if not movies:
+            return None, None
+
+        movies.sort(key=lambda x: x["watched_date"], reverse=True)
+
+        most_liked_rating = 0
+        most_liked_movie = None
+
+        most_disliked_rating = 5
+        most_disliked_movie = None
+
+        for movie in movies:
+            if movie.get("rating") > most_liked_rating:
+                most_liked_rating = movie.get("rating")
+                most_liked_movie = movie
+            if movie.get("rating") < most_disliked_rating:
+                most_disliked_rating = movie.get("rating")
+                most_disliked_movie = movie
+
+        return {
+            "most_liked_movie": most_liked_movie,
+            "most_disliked_movie": most_disliked_movie,
+        }
+
+    most_liked_disliked_week = calculate_liked_disliked(watched_movies.get("watched_this_week"))
+    most_liked_disliked_month = calculate_liked_disliked(watched_movies.get("watched_this_month"))
+    most_liked_disliked_year = calculate_liked_disliked(watched_movies.get("watched_this_year"))
+
+    return most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year
+
 # def a():
 #     return None
 
@@ -387,9 +419,16 @@ def get_current_profile_context():
     fav_genre_week = {"label": "Go-to Genre", "value": fav_genre_week}
     metrics_list_week = [total_movies_week, average_week, fav_genre_week]
 
+    most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year = get_liked_disliked_per_period(watched_movies)
+
     return {
         "watched_movies": watched_movies,
+
         "metrics_list_year": metrics_list_year,
         "metrics_list_month": metrics_list_month,
-        "metrics_list_week": metrics_list_week
+        "metrics_list_week": metrics_list_week,
+
+        "most_liked_disliked_week": most_liked_disliked_week,
+        "most_liked_disliked_month": most_liked_disliked_month,
+        "most_liked_disliked_year": most_liked_disliked_year,
     }
