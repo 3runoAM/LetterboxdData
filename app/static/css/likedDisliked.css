@@ -17,7 +17,7 @@
 
 .liked-disliked-section {
     display: flex;
-    gap: 0.5rem;
+    gap: 1.5rem;
 }
 
 .liked-dislike-section > div {
@@ -28,6 +28,7 @@
 
 .taste-name {
     text-transform: uppercase;
+    text-shadow: 0 0 0.5rem #cbaf08;
     font-family: var(--yantramanav);
 }
 

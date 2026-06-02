@@ -48,7 +48,7 @@
 }
 
 .movie-list::-webkit-scrollbar {
-    height: 5px;
+    height: 2px;
 }
 
 .movie-list::-webkit-scrollbar-track {
