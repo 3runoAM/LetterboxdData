@@ -294,7 +294,9 @@ def get_watched_movies_per_period(watched_this_year, current_time):
             "year": watch_log.movie.release_year,
             "rating": watch_log.rating,
             "watched_date": watch_log.watched_date,
-            "genres": [genre.name for genre in watch_log.movie.genres]
+            "genres": [genre.name for genre in watch_log.movie.genres],
+            "decade": watch_log.movie.decade,
+            "time_lag": watch_log.time_lag
         }
 
     watched_this_year = [to_dict(movie) for movie in watched_this_year]
@@ -361,7 +363,7 @@ def get_favorite_decade_per_period(watched_movies):
         if not movies:
             return None
 
-        decades = [(movie.get("year") // 10) * 10 for movie in movies]
+        decades = [movie.get("decade") for movie in movies]
         decade_count = Counter(decades)
 
         return decade_count.most_common(1)[0][0]
@@ -404,6 +406,40 @@ def get_liked_disliked_per_period(watched_movies):
 
     return most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year
 
+def get_time_lag_context_per_period(watched_movies):
+    def get_time_lag_context(movies):
+        if not movies:
+            return None
+
+        time_lags = [movie.get("time_lag") for movie in movies]
+        avg_lag = sum(time_lags) / len(time_lags)
+
+        if avg_lag >= 30:
+            time_profile = "Historian"
+            time_description = f"Your time machine is permanently set to the past. With an average of {avg_lag:.1f} years between release dates and your screen, you cherish the timeless classics that shaped cinema"
+        elif avg_lag >= 15:
+            time_profile = "Nostalgic"
+            time_description = f"Your sweet spot is about {avg_lag:.1f} years back. You love revisiting or discovering those generation-defining gems that have aged like fine wine"
+        elif avg_lag >= 5:
+            time_profile = "Modernist"
+            time_description = f"You like giving movies some room to breathe. Your {avg_lag:.1f}-year average gap shows you catch up on great stories at your own pace, away from the immediate hype"
+        else:
+            time_profile = "Trendsetter"
+            time_description = f"You live in the absolute present. Your average gap is just {avg_lag:.1f} years—if a movie is any fresher, it would still be premiering in theaters"
+
+        return {
+            "time_profile": time_profile,
+            "time_description": time_description,
+            "time_lag_average": round(avg_lag, 1)
+        }
+
+
+    time_lag_week = get_time_lag_context(watched_movies.get("watched_this_week"))
+    time_lag_month = get_time_lag_context(watched_movies.get("watched_this_month"))
+    time_lag_year = get_time_lag_context(watched_movies.get("watched_this_year"))
+
+    return time_lag_week, time_lag_month, time_lag_year
+
 # def a():
 #     return None
 
@@ -437,9 +473,14 @@ def get_current_profile_context():
     metrics_list_week = [total_movies_week, average_week, fav_genre_week, fav_decade_week]
 
     most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year = get_liked_disliked_per_period(watched_movies)
+    time_lag_week, time_lag_month, time_lag_year = get_time_lag_context_per_period(watched_movies)
 
     return {
         "watched_movies": watched_movies,
+        
+        "time_lag_week": time_lag_week,
+        "time_lag_month": time_lag_month,
+        "time_lag_year": time_lag_year,
 
         "metrics_list_year": metrics_list_year,
         "metrics_list_month": metrics_list_month,

@@ -15,7 +15,7 @@
         <link rel="stylesheet" href="{{ url_for("static", filename="css/currentProfile.css") }}">
     </head>
     <body>
-        {% from "partials/macros.html" import movie_list, metric_card, liked_disliked %}
+        {% from "partials/macros.html" import movie_list, metric_card, liked_disliked, profiling %}
         {% include "partials/nav.html" %}
 
         <main class="container">
@@ -35,14 +35,12 @@
                 </section>
 
                 {{ movie_list("Watched This Week", context.watched_movies.watched_this_week)}}
+                <div class="space"></div>
 
                 <div class="chart-container">
                     {{ liked_disliked(context.most_liked_disliked_week.most_liked_movie, context.most_liked_disliked_week.most_disliked_movie) }}
 
-
-                    <section>
-                        <h3>OUTRA SECTION AQUI</h3>
-                    </section>
+                    {{ profiling(context.time_lag_week.time_profile, context.time_lag_week.time_description, time_lag_graphs.time_lag_week) }}
                 </div>
             </section>
 
@@ -54,13 +52,12 @@
                 </section>
 
                 {{ movie_list("Watched This Month", context.watched_movies.watched_this_month)}}
+                <div class="space"></div>
 
                 <div class="chart-container">
                      {{ liked_disliked(context.most_liked_disliked_month.most_liked_movie, context.most_liked_disliked_month.most_disliked_movie) }}
 
-                    <section>
-                        <h3>OUTRA SECTION AQUI</h3>
-                    </section>
+                     {{ profiling(context.time_lag_month.time_profile, context.time_lag_month.time_description, time_lag_graphs.time_lag_month) }}
                 </div>
 
             </section>
@@ -73,18 +70,19 @@
                 </section>
 
                 {{ movie_list("Watched This Year", context.watched_movies.watched_this_year)}}
+                <div class="space"></div>
 
                 <div class="chart-container">
                     {{ liked_disliked(context.most_liked_disliked_year.most_liked_movie, context.most_liked_disliked_year.most_disliked_movie) }}
 
-                    <section>
-                        <h3>OUTRA SECTION AQUI</h3>
-                    </section>
+                     {{ profiling(context.time_lag_year.time_profile, context.time_lag_year.time_description, time_lag_graphs.time_lag_year) }}
                 </div>
 
             </section>
         </main>
 
+
+        <div class="space"></div>
         <script src="{{ url_for("static", filename="javascript/toggler.js") }}"></script>
     </body>
 </html>
