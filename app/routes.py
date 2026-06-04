@@ -3,7 +3,7 @@ from flask import Blueprint, request, render_template, flash, redirect, url_for
 from app.services.context_engine import get_profile_context, get_current_profile_context
 from app.services.etl_service import get_processed_data, transform_and_load
 from app.services.graph_builder import plot_overview_wordcloud, plot_rewatch_rate, plot_movie_map, \
-    plot_time_lag_per_period
+    plot_time_lag_per_period, plot_points_graph_per_period
 from app.utils.file_handler import validate_files, save_files, is_data_available
 
 main = Blueprint("main", __name__)
@@ -79,12 +79,15 @@ def current_profile():
                                                     context.get("time_lag_month").get("time_lag_average"),
                                                     context.get("time_lag_year").get("time_lag_average")])
 
+        genre_category_graphs = plot_points_graph_per_period([context.get("genre_category_week"),
+                                                              context.get("genre_category_month"),
+                                                              context.get("genre_category_year")])
     except Exception as e:
         print(f"Data processing error: {e}")
         return redirect(url_for("main.main_route"))
 
     return render_template("currentProfile.html",
-                           context=context, time_lag_graphs=time_lag_graphs)
+                           context=context, time_lag_graphs=time_lag_graphs, genre_category_graphs=genre_category_graphs, )
 
 
 # -----------------------------------------------------------------------------------------------------------------------
