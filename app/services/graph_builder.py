@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 import plotly.express as px
 from sqlalchemy import func
 
@@ -97,51 +98,136 @@ def plot_movie_map():
 
 def plot_time_lag_per_period(watched_movies, time_lag_averages):
     def plot_time_lag(movies, time_lag_average):
-        time_lags = [movie.get("time_lag") for movie in movies]
+        data = [
+            {
+                "title": movie["name"],
+                "release_year": movie["year"],
+                "time_lag": movie["time_lag"]
+            } for movie in movies
+        ]
 
-        fig = px.histogram(
-            x=time_lags,
-            nbins=20,
-            labels={'x': 'Years between Release and Watch Date', 'y': 'Movie Count'},
-            color_discrete_sequence=['#3fbcf2']
+        fig = px.scatter(
+            data,
+            x="release_year",  # X agora é o ano do filme, criando a diagonal
+            y="time_lag",
+            hover_name="title",
+            color="time_lag",
+            color_continuous_scale=[[0.0, "#fc7e00"], [0.5, "#3fbcf2"], [1.0, "#00d94f"]],
+            labels={'release_year': 'Movie Release Year', 'time_lag': 'Years Until Watched'}
         )
 
-        fig.add_vline(
-            x=time_lag_average,
-            line_dash="dash",
-            line_width=2,
-            line_color="#00d94f",
-            annotation_text=f"Average: {time_lag_average:.1f} years",
-            annotation_position="top right",
-            annotation_font=dict(color="#fc7e00", size=12)
+        fig.update_traces(
+            marker=dict(
+                size=14,
+                opacity=0.85,
+                line=dict(width=1.5, color='#A9BBCC')
+            )
+        )
+
+        years = [movie.get("year") for movie in movies if movie.get("year")]
+        min_year = min(years) if years else 1900
+        current_year = 2026
+        fig.add_shape(
+            type="line",
+            x0=min_year, y0=current_year - min_year,
+            x1=current_year, y1=0,
+            line=dict(color="#A9BBCC", width=1.5, dash="dash"),
+            layer="below"
         )
 
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#fff"),
+            coloraxis_showscale=False,
             xaxis=dict(
-                title="Time Lag (Years)",
+                title="Movie Release Year",
                 showgrid=False,
-                linecolor="#A9BBCC"
+                linecolor="#A9BBCC",
+                autorange = "reversed"
             ),
             yaxis=dict(
-                title="Number of Movies",
+                title="Years Until You Watched It",
                 showgrid=True,
-                gridcolor="rgba(255,255,255,0.1)"
+                gridcolor="rgba(255,255,255,0.1)",
+                linecolor="rgba(0,0,0,0)"
             ),
-            bargap=0.15,
-            margin={"r": 10, "t": 30, "l": 10, "b": 10}
+            margin={"r": 20, "t": 40, "l": 20, "b": 20}
         )
 
-        return fig
+        fig.add_hline(
+            y=time_lag_average,
+            line_dash="dot",
+            line_width=2,
+            line_color="#de1643",
+            annotation_text=f"Average: {time_lag_average:.1f} years",
+            annotation_position="bottom left",
+            annotation_font=dict(color="#fff", size=15)
+        )
+
+        return fig.to_html(full_html=False)
 
     time_lag_week = plot_time_lag(watched_movies.get("watched_this_week"), time_lag_averages[0])
     time_lag_month = plot_time_lag(watched_movies.get("watched_this_month"), time_lag_averages[1])
     time_lag_year = plot_time_lag(watched_movies.get("watched_this_year"), time_lag_averages[2])
 
     return {
-        "time_lag_week": time_lag_week.to_html(full_html=False),
-        "time_lag_month": time_lag_month.to_html(full_html=False),
-        "time_lag_year": time_lag_year.to_html(full_html=False)
+        "time_lag_week": time_lag_week,
+        "time_lag_month": time_lag_month,
+        "time_lag_year": time_lag_year
+    }
+
+
+def plot_points_graph_per_period(genre_category_points_list):
+    def plot_points_graph(df_points):
+        fig = px.line_polar(
+            df_points,
+            r="values",
+            theta="categories",
+            line_close=True,
+            template="plotly_dark"
+        )
+
+        fig.update_traces(
+            fill="toself",
+            fillcolor="rgba(0,217,79, 0.5)",
+            line=dict(color="#3fbcf2", width=2),
+            mode="lines+markers",
+            marker=dict(color="#fc7e00", size=6)
+        )
+
+        fig.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#fff"),
+            polar=dict(
+                bgcolor="rgba(0,0,0,0)",
+                radialaxis=dict(
+                    visible=True,
+                    showline=False,
+                    showticklabels=False,
+                    ticks="",
+                    gridcolor="rgba(0, 0, 0, 0)",
+                    range=[0, 50]
+                ),
+                angularaxis=dict(
+                    visible=True,
+                    showline=False,
+                    showgrid=True,
+                    gridcolor="rgba(169, 187, 204, 0.15)",
+                    gridwidth=1,
+                    tickfont=dict(color="#A9BBCC", size=16, family="app/static/fonts/Yantramanav-Regular.ttf")
+                )
+            )
+        )
+        return fig.to_html(full_html=False)
+
+    points_graph_week = plot_points_graph(pd.DataFrame(genre_category_points_list[0]))
+    points_graph_month = plot_points_graph(pd.DataFrame(genre_category_points_list[1]))
+    points_graph_year = plot_points_graph(pd.DataFrame(genre_category_points_list[2]))
+
+    return {
+        "points_graph_week": points_graph_week,
+        "points_graph_month": points_graph_month,
+        "points_graph_year": points_graph_year,
     }
