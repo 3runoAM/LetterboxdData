@@ -1,6 +1,8 @@
 import calendar
 from collections import Counter, defaultdict
 from datetime import timedelta, date
+
+import pandas as pd
 from sqlalchemy import func, case
 from sqlalchemy.orm import joinedload
 
@@ -12,8 +14,10 @@ from app.models import Movie, Genre, Director, WatchLog
 def get_total_movies():
     return data_base.session.query(Movie).count() or None
 
+
 def get_average_rating():
     return round(data_base.session.query(func.avg(WatchLog.rating)).scalar(), 1) or None
+
 
 def get_favorite_day():
     result = (data_base.session.query(
@@ -24,6 +28,7 @@ def get_favorite_day():
               .first())
 
     return result.day_name or None
+
 
 def get_favorite_decade():
     result = (data_base.session.query(
@@ -37,6 +42,7 @@ def get_favorite_decade():
               .first())
 
     return result.decade or None
+
 
 def get_favorite_genre():
     result = (data_base.session.query(
@@ -55,6 +61,7 @@ def get_favorite_genre():
 
     return result.genre_name or None
 
+
 def get_most_frequent_director():
     result = (data_base.session.query(
         Director.name.label("director_name"),
@@ -70,6 +77,7 @@ def get_most_frequent_director():
               .first())
 
     return result.director_name or None
+
 
 def get_rewatch_context():
     result = data_base.session.query(
@@ -120,6 +128,7 @@ def get_rewatch_context():
         "rewatch_description": rewatch_description,
         "rewatched_movies": rewatched_movies
     }
+
 
 def get_streak_context():
     result = (data_base.session.query(WatchLog.watched_date.label("watch_date"))
@@ -179,6 +188,7 @@ def get_streak_context():
         "movies": streak_movies,
     }
 
+
 def get_movie_moment_context():
     total_movies = data_base.session.query(func.count(Movie.id)).scalar()
 
@@ -225,6 +235,7 @@ def get_movie_moment_context():
         "movie_percentage": round(movie_percentage, 1),
     }
 
+
 def get_profile_context():
     total_movies = {"label": "Movies Watched", "value": get_total_movies()}
     favorite_day = {"label": "Cinema Day", "value": get_favorite_day()}
@@ -245,6 +256,7 @@ def get_profile_context():
         "rewatch_context": rewatch_context,
         "movie_context": movie_context,
     }
+
 
 # CURRENT PROFILE CONTEXT ----------------------------------------------------------------------------------------------
 
@@ -279,12 +291,14 @@ def get_current_time():
         }
     }
 
+
 def get_watched_this_year(current_time):
     return (data_base.session.query(WatchLog)
             .options(joinedload(WatchLog.movie).selectinload(Movie.genres))
             .filter(WatchLog.watched_year == current_time.get("year").get("start").year)
             .order_by(WatchLog.watched_date.desc())
             .all())
+
 
 def get_watched_movies_per_period(watched_this_year, current_time):
     def to_dict(watch_log):
@@ -320,12 +334,14 @@ def get_watched_movies_per_period(watched_this_year, current_time):
         "watched_this_week": watched_this_week
     }
 
+
 def get_total_movies_per_period(watched_movies):
     total_year = len(watched_movies.get("watched_this_year"))
     total_month = len(watched_movies.get("watched_this_month"))
     total_week = len(watched_movies.get("watched_this_week"))
 
     return total_year, total_month, total_week
+
 
 def get_average_rating_per_period(watched_movies):
     total_year, total_month, total_week = get_total_movies_per_period(watched_movies)
@@ -338,6 +354,7 @@ def get_average_rating_per_period(watched_movies):
     avg_rating_year = calculate_avg(watched_movies.get("watched_this_year"), total_year)
 
     return round(avg_rating_year, 1), round(avg_rating_month, 1), round(avg_rating_week, 1)
+
 
 def get_favorite_genre_per_period(watched_movies):
     def calculate_top_genre(movies):
@@ -358,6 +375,7 @@ def get_favorite_genre_per_period(watched_movies):
 
     return fav_genre_year, fav_genre_month, fav_genre_week
 
+
 def get_favorite_decade_per_period(watched_movies):
     def calculate_favorite_decade(movies):
         if not movies:
@@ -373,6 +391,7 @@ def get_favorite_decade_per_period(watched_movies):
     fav_decade_year = calculate_favorite_decade(watched_movies.get("watched_this_year"))
 
     return fav_decade_week, fav_decade_month, fav_decade_year
+
 
 def get_liked_disliked_per_period(watched_movies):
     def calculate_liked_disliked(movies):
@@ -406,6 +425,7 @@ def get_liked_disliked_per_period(watched_movies):
 
     return most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year
 
+
 def get_time_lag_context_per_period(watched_movies):
     def get_time_lag_context(movies):
         if not movies:
@@ -433,15 +453,70 @@ def get_time_lag_context_per_period(watched_movies):
             "time_lag_average": round(avg_lag, 1)
         }
 
-
     time_lag_week = get_time_lag_context(watched_movies.get("watched_this_week"))
     time_lag_month = get_time_lag_context(watched_movies.get("watched_this_month"))
     time_lag_year = get_time_lag_context(watched_movies.get("watched_this_year"))
 
     return time_lag_week, time_lag_month, time_lag_year
 
-# def a():
-#     return None
+
+def get_genre_category_per_period(watched_movies):
+    def get_genre_category(movies, time):
+        if not movies:
+            return None
+
+        genre_category_mapping = {
+            "Adrenaline": ["Action", "Adventure", "War", "Western"],
+            "Shiver": ["Crime", "Mystery", "Horror", "Thriller"],
+            "Brain": ["Drama", "Science Fiction", "Documentary", "History"],
+            "Emotion": ["Comedy", "Romance", "Family"],
+            "Escapism": ["Fantasy", "Animation", "Music"]
+        }
+
+        graph_points = {category: 0 for category in genre_category_mapping.keys()}
+        points = 0
+
+        for movie in movies:
+            rating = movie.get("rating")
+            for genre in movie.get("genres"):
+                for category, genres in genre_category_mapping.items():
+                    if genre in genres:
+                        graph_points[category] += rating
+                        points += rating
+                        break
+
+        categories = list(genre_category_mapping.keys())
+        values = [round((graph_points[category] / points) * 100, 1) for category in
+                  categories] if points > 0 else [0] * len(categories)
+
+        max_value_category = categories[values.index(max(values))]
+
+        if max_value_category == 'Adrenaline':
+            description = f"Your {time} was dominated by the Adrenaline trait: you thrived on high-octane action, fast-paced plots, and heart-pounding blockbusters that kept you on the edge of your seat"
+        elif max_value_category == 'Shiver':
+            description = f"Your {time} was dominated by the Shiver trait: you had a strong craving for the darker side of cinema, preferring tense thrillers, eerie mysteries, and horror stories that tested your nerves"
+        elif max_value_category == 'Brain':
+            description = f"Your {time} was dominated by the Brain trait: you looked for psychological depth, mind-bending sci-fi, and complex narratives that left you thinking long after the credits rolled"
+        elif max_value_category == 'Emotion':
+            description = f"Your {time} was dominated by the Emotion trait: you were drawn to powerful dramas, sweeping romances, and deeply moving stories crafted to touch your heart or make you shed a tear"
+        elif max_value_category == 'Escapism':
+            description = f"Your {time} was dominated by the Escapism trait: you loved lighthearted comedies, animated wonders, and pure fantasy—the perfect cinematic escape to unwind and unplug from reality"
+        else:
+            description = "Your movie taste was perfectly balanced across multiple cinematic dimensions!"
+
+        return {
+            "categories": categories,
+            "values": values,
+            "description": description,
+        }
+
+    genre_category_week = get_genre_category(watched_movies.get("watched_this_week"), "week")
+    genre_category_month = get_genre_category(watched_movies.get("watched_this_month"), "month")
+    genre_category_year = get_genre_category(watched_movies.get("watched_this_year"), "year")
+
+
+    return genre_category_week, genre_category_month, genre_category_year
+
 
 def get_current_profile_context():
     current_time = get_current_time()
@@ -472,15 +547,21 @@ def get_current_profile_context():
     fav_decade_week = {"label": "Golden Decade", "value": fav_decade_week}
     metrics_list_week = [total_movies_week, average_week, fav_genre_week, fav_decade_week]
 
-    most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year = get_liked_disliked_per_period(watched_movies)
+    most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year = get_liked_disliked_per_period(
+        watched_movies)
     time_lag_week, time_lag_month, time_lag_year = get_time_lag_context_per_period(watched_movies)
+    genre_category_week, genre_category_month, genre_category_year = get_genre_category_per_period(watched_movies)
 
     return {
         "watched_movies": watched_movies,
-        
+
         "time_lag_week": time_lag_week,
         "time_lag_month": time_lag_month,
         "time_lag_year": time_lag_year,
+
+        "genre_category_week": genre_category_week,
+        "genre_category_month": genre_category_month,
+        "genre_category_year": genre_category_year,
 
         "metrics_list_year": metrics_list_year,
         "metrics_list_month": metrics_list_month,
