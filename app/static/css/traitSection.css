@@ -1,0 +1,35 @@
+:root {
+    --primary-color: #00d94f;
+    --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
+    --text-primary: #ebeff2;
+    --text-secondary: #A9BBCC;
+    --background-primary: #202830;
+    --background-secondary: #14181c;
+
+    /*Fontes*/
+    --graphik: 'Graphik', sans-serif;
+    --libre-caslon: "Libre Caslon Text", sans-serif;
+    --yantramanav: "Yantramanav", sans-serif;
+    --geologica: "Geologica", sans-serif;
+
+}
+
+.trait-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.trait-section > h2 {
+    text-transform: uppercase;
+    font-family: var(--yantramanav);
+}
+
+.trait-section > p {
+    max-width: 50%;
+    font-family: var(--geologica);
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+}

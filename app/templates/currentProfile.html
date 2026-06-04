@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="{{ url_for("static", filename="css/styles.css") }}">
         <link rel="stylesheet" href="{{ url_for("static", filename="css/movieList.css") }}">
         <link rel="stylesheet" href="{{ url_for("static", filename="css/likedDisliked.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static", filename="css/traitSection.css") }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV@100..900,0&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Yantramanav:wght@100;300;400;500;700;900&display=swap"
@@ -15,7 +16,7 @@
         <link rel="stylesheet" href="{{ url_for("static", filename="css/currentProfile.css") }}">
     </head>
     <body>
-        {% from "partials/macros.html" import movie_list, metric_card, liked_disliked, profiling %}
+        {% from "partials/macros.html" import movie_list, metric_card, liked_disliked, profiling, trait %}
         {% include "partials/nav.html" %}
 
         <main class="container">
@@ -42,6 +43,8 @@
 
                     {{ profiling(context.time_lag_week.time_profile, context.time_lag_week.time_description, time_lag_graphs.time_lag_week) }}
                 </div>
+
+                {{ trait(genre_category_graphs.points_graph_week, context.genre_category_week.description) }}
             </section>
 
             <section id="panel-month" class="panel">
@@ -60,6 +63,7 @@
                      {{ profiling(context.time_lag_month.time_profile, context.time_lag_month.time_description, time_lag_graphs.time_lag_month) }}
                 </div>
 
+                {{ trait(genre_category_graphs.points_graph_month, context.genre_category_month.description) }}
             </section>
 
             <section id="panel-year" class="panel">
@@ -78,6 +82,7 @@
                      {{ profiling(context.time_lag_year.time_profile, context.time_lag_year.time_description, time_lag_graphs.time_lag_year) }}
                 </div>
 
+                {{ trait(genre_category_graphs.points_graph_year, context.genre_category_year.description) }}
             </section>
         </main>
 
