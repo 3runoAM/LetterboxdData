@@ -39,7 +39,7 @@
         {% else %}
 
             <div class="no-movies">
-                <p >No movies here yet :(</p>
+                <p>No movies here yet :(</p>
             </div>
         {% endif %}
     </section>
@@ -65,7 +65,7 @@
 
                 <div class="stars" style="--rating: {{ most_liked_movie.rating }};"
                      aria-label="Nota: {{ most_liked_movie.rating }} de 5"
-                     title="{{most_liked_movie.rating }}"></div>
+                     title="{{ most_liked_movie.rating }}"></div>
             </div>
         </div>
 
@@ -86,8 +86,18 @@
 
                 <div class="stars" style="--rating: {{ most_disliked_movie.rating }};"
                      aria-label="Nota: {{ most_disliked_movie.rating }} de 5"
-                     title="{{most_disliked_movie.rating }}"></div>
+                     title="{{ most_disliked_movie.rating }}"></div>
             </div>
         </div>
+    </section>
+{% endmacro %}
+
+{% macro trait(graph, description) %}
+    <section class="trait-section">
+        <h2>Your cinema trait</h2>
+
+        {{ graph | safe }}
+
+        <p>{{ description }}</p>
     </section>
 {% endmacro %}
