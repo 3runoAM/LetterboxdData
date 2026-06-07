@@ -106,9 +106,12 @@ def plot_time_lag_per_period(watched_movies, time_lag_averages):
             } for movie in movies
         ]
 
+        if not data:
+            return None
+
         fig = px.scatter(
             data,
-            x="release_year",  # X agora é o ano do filme, criando a diagonal
+            x="release_year",
             y="time_lag",
             hover_name="title",
             color="time_lag",
@@ -180,6 +183,9 @@ def plot_time_lag_per_period(watched_movies, time_lag_averages):
 
 def plot_points_graph_per_period(genre_category_points_list):
     def plot_points_graph(df_points):
+        if df_points is None or len(df_points) == 0:
+            return None
+
         fig = px.line_polar(
             df_points,
             r="values",
@@ -222,9 +228,16 @@ def plot_points_graph_per_period(genre_category_points_list):
         )
         return fig.to_html(full_html=False)
 
-    points_graph_week = plot_points_graph(pd.DataFrame(genre_category_points_list[0]))
-    points_graph_month = plot_points_graph(pd.DataFrame(genre_category_points_list[1]))
-    points_graph_year = plot_points_graph(pd.DataFrame(genre_category_points_list[2]))
+    for genre_category_points in genre_category_points_list:
+        print(genre_category_points)
+
+    df_week = pd.DataFrame(genre_category_points_list[0]) if genre_category_points_list[0]["categories"] is not None else None
+    df_month = pd.DataFrame(genre_category_points_list[1]) if genre_category_points_list[1]["categories"] is not None else None
+    df_year = pd.DataFrame(genre_category_points_list[2]) if genre_category_points_list[2]["categories"] is not None else None
+
+    points_graph_week = plot_points_graph(df_week)
+    points_graph_month = plot_points_graph(df_month)
+    points_graph_year = plot_points_graph(df_year)
 
     return {
         "points_graph_week": points_graph_week,
