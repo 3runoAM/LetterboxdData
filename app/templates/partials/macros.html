@@ -6,14 +6,18 @@
 {% endmacro %}
 
 {% macro profiling(profile_name, profile_description, profile_chart) %}
-    <section class="profiling-section">
-        <h2>{{ profile_name }}</h2>
-        <p class="profile_description">{{ profile_description }}</p>
+    {% if profile_name and profile_description %}
+        <section class="profiling-section">
+            <h2>{{ profile_name }}</h2>
+            <p class="profile_description">{{ profile_description }}</p>
 
-        <div class="profiling-chart">
-            {{ profile_chart | safe }}
-        </div>
-    </section>
+            {% if profile_chart %}
+                <div class="profiling-chart">
+                    {{ profile_chart | safe }}
+                </div>
+            {% endif %}
+        </section>
+    {% endif %}
 {% endmacro %}
 
 {% macro movie_list(label, movies, id_class) %}
@@ -49,55 +53,71 @@
 
 {% macro liked_disliked(most_liked_movie, most_disliked_movie) %}
     <section class="liked-disliked-section">
-        <div>
-            <h3 class="taste-name">Favorite</h3>
-            <img src="{{ most_liked_movie.poster }}"
-                 alt="{{ most_liked_movie.name }} poster"
-                 title="{{ most_liked_movie.name }}"
-                 class="liked-disliked-poster {{ 'bad_rating' if most_liked_movie.rating <= 2 else 'good_rating' }}">
-
+        {% if most_liked_movie %}
             <div>
-                <h3 title="{{ most_liked_movie.name }}">
-                    {{ most_liked_movie.name }}
-                </h3>
+                <h3 class="taste-name">Favorite</h3>
+                <img src="{{ most_liked_movie.poster }}"
+                     alt="{{ most_liked_movie.name }} poster"
+                     title="{{ most_liked_movie.name }}"
+                     class="liked-disliked-poster {{ 'bad_rating' if most_liked_movie.rating <= 2 else 'good_rating' }}">
 
-                <p>{{ most_liked_movie.year }}</p>
+                <div>
+                    <h3 title="{{ most_liked_movie.name }}">
+                        {{ most_liked_movie.name }}
+                    </h3>
 
-                <div class="stars" style="--rating: {{ most_liked_movie.rating }};"
-                     aria-label="Nota: {{ most_liked_movie.rating }} de 5"
-                     title="{{ most_liked_movie.rating }}"></div>
+                    <p>{{ most_liked_movie.year }}</p>
+
+                    <div class="stars" style="--rating: {{ most_liked_movie.rating }};"
+                         aria-label="Nota: {{ most_liked_movie.rating }} de 5"
+                         title="{{ most_liked_movie.rating }}"></div>
+                </div>
             </div>
-        </div>
+        {% else %}
+            <div class="no-data">
+                <p>No favorite movies this period</p>
+            </div>
+        {% endif %}
 
-        <div>
-            <h3 class="taste-name">Least Favorite</h3>
-
-            <img src="{{ most_disliked_movie.poster }}"
-                 alt="{{ most_disliked_movie.name }} poster"
-                 title="{{ most_disliked_movie.name }}"
-                 class="liked-disliked-poster {{ 'bad_rating' if most_disliked_movie.rating <= 2 else 'good_rating' }}">
-
+        {% if most_disliked_movie %}
             <div>
-                <h3 title="{{ most_disliked_movie.name }}">
-                    {{ most_disliked_movie.name }}
-                </h3>
+                <h3 class="taste-name">Least Favorite</h3>
 
-                <p>{{ most_disliked_movie.year }}</p>
+                <img src="{{ most_disliked_movie.poster }}"
+                     alt="{{ most_disliked_movie.name }} poster"
+                     title="{{ most_disliked_movie.name }}"
+                     class="liked-disliked-poster {{ 'bad_rating' if most_disliked_movie.rating <= 2 else 'good_rating' }}">
 
-                <div class="stars" style="--rating: {{ most_disliked_movie.rating }};"
-                     aria-label="Nota: {{ most_disliked_movie.rating }} de 5"
-                     title="{{ most_disliked_movie.rating }}"></div>
+                <div>
+                    <h3 title="{{ most_disliked_movie.name }}">
+                        {{ most_disliked_movie.name }}
+                    </h3>
+
+                    <p>{{ most_disliked_movie.year }}</p>
+
+                    <div class="stars" style="--rating: {{ most_disliked_movie.rating }};"
+                         aria-label="Nota: {{ most_disliked_movie.rating }} de 5"
+                         title="{{ most_disliked_movie.rating }}"></div>
+                </div>
             </div>
-        </div>
+        {% else %}
+            <div class="no-data">
+                <p>No least favorite movies this period</p>
+            </div>
+        {% endif %}
     </section>
 {% endmacro %}
 
 {% macro trait(graph, description) %}
-    <section class="trait-section">
-        <h2>Your cinema trait</h2>
+    {% if description %}
+        <section class="trait-section">
+            <h2>Your cinema trait</h2>
 
-        {{ graph | safe }}
+            {% if graph %}
+                {{ graph | safe }}
+            {% endif %}
 
-        <p>{{ description }}</p>
-    </section>
+            <p>{{ description }}</p>
+        </section>
+    {% endif %}
 {% endmacro %}

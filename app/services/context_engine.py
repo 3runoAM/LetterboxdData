@@ -396,7 +396,10 @@ def get_favorite_decade_per_period(watched_movies):
 def get_liked_disliked_per_period(watched_movies):
     def calculate_liked_disliked(movies):
         if not movies:
-            return None
+            return {
+            "most_liked_movie": None,
+            "most_disliked_movie": None,
+        }
 
         movies.sort(key=lambda x: x["watched_date"], reverse=True)
 
@@ -429,7 +432,11 @@ def get_liked_disliked_per_period(watched_movies):
 def get_time_lag_context_per_period(watched_movies):
     def get_time_lag_context(movies):
         if not movies:
-            return None
+            return {
+            "time_profile": None,
+            "time_description": None,
+            "time_lag_average": None
+        }
 
         time_lags = [movie.get("time_lag") for movie in movies]
         avg_lag = sum(time_lags) / len(time_lags)
@@ -463,7 +470,11 @@ def get_time_lag_context_per_period(watched_movies):
 def get_genre_category_per_period(watched_movies):
     def get_genre_category(movies, time):
         if not movies:
-            return None
+            return {
+            "categories": None,
+            "values": None,
+            "description": None,
+        }
 
         genre_category_mapping = {
             "Adrenaline": ["Action", "Adventure", "War", "Western"],
@@ -547,8 +558,7 @@ def get_current_profile_context():
     fav_decade_week = {"label": "Golden Decade", "value": fav_decade_week}
     metrics_list_week = [total_movies_week, average_week, fav_genre_week, fav_decade_week]
 
-    most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year = get_liked_disliked_per_period(
-        watched_movies)
+    most_liked_disliked_week, most_liked_disliked_month, most_liked_disliked_year = get_liked_disliked_per_period(watched_movies)
     time_lag_week, time_lag_month, time_lag_year = get_time_lag_context_per_period(watched_movies)
     genre_category_week, genre_category_month, genre_category_year = get_genre_category_per_period(watched_movies)
 
