@@ -1,6 +1,7 @@
 from datetime import timedelta, date
 
 from sqlalchemy import func, case
+from sqlalchemy.sql.functions import coalesce
 
 from app.data_base import data_base
 from app.models import Movie, Genre, Director, WatchLog
@@ -77,12 +78,12 @@ def get_most_frequent_director():
 
 def get_rewatch_context():
     result = data_base.session.query(
-        func.count(WatchLog.id).label('total_diary'),
-        func.sum(case((WatchLog.is_rewatch == True, 1), else_=0)).label('total_rewatches')
+        coalesce(func.count(WatchLog.id), 0).label('total_diary'),
+        coalesce(func.sum(case((WatchLog.is_rewatch == True, 1), else_=0)), 0).label('total_rewatches')
     ).first()
 
-    total_diary = result.total_diary or 0
-    total_rewatches = result.total_rewatches or 0
+    total_diary = result.total_diary
+    total_rewatches = result.total_rewatches
 
     rewatch_rate = (total_rewatches / total_diary) * 100 if total_diary > 0 else 0
 
