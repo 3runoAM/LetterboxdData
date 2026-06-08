@@ -5,6 +5,7 @@
     </div>
 {% endmacro %}
 
+
 {% macro profiling(profile_name, profile_description, profile_chart) %}
     {% if profile_name and profile_description %}
         <section class="profiling-section">
@@ -19,6 +20,7 @@
         </section>
     {% endif %}
 {% endmacro %}
+
 
 {% macro movie_list(label, movies, id_class) %}
     <section class="movie-section">
@@ -48,7 +50,6 @@
         {% endif %}
     </section>
 {% endmacro %}
-
 
 
 {% macro liked_disliked(most_liked_movie, most_disliked_movie) %}
@@ -108,6 +109,7 @@
     </section>
 {% endmacro %}
 
+
 {% macro trait(graph, description) %}
     {% if description %}
         <section class="trait-section">
@@ -120,4 +122,28 @@
             <p>{{ description }}</p>
         </section>
     {% endif %}
+{% endmacro %}
+
+
+{% macro badge_case(badge_category, badge_list) %}
+    <div class="badge-container">
+        <h2 class="badge-category">{{ badge_category }}</h2>
+        <span class="horizontal-line"></span>
+
+        <div class="badge-case">
+            {% for badge in badge_list %}
+                <div class="individual-badge">
+                    {% if badge.is_active %}
+                        <p class="profile-name">{{ badge.badge_name }}</p>
+                        <img src="{{ badge.image_url }}" alt="Badge {{ badge.badge_name }}" class="badge-image">
+                        <p class="badge-description">{{ badge.description }}</p>
+                    {% else %}
+                        <div class="profile-shadow"></div>
+                        <div class="badge-shadow"></div>
+                        <div class="description-shadow"></div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endmacro %}

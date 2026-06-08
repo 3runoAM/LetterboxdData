@@ -1,0 +1,116 @@
+:root {
+    --primary-color: #00d94f;
+    --secondary-color: #3fbcf2;
+    --accent-color: #fc7e00;
+    --background-gradient: linear-gradient(180deg, #1F2A33 0%, #1A232B 13.49%, #0B1116 29.75%);
+    --text-primary: #edeff1;
+    --text-secondary: #A9BBCC;
+    --background-primary: #202830;
+    --background-secondary: #14181c;
+
+    /*Fontes*/
+    --graphik: 'Graphik', sans-serif;
+    --libre-caslon: "Libre Caslon Text", sans-serif;
+    --yantramanav: "Yantramanav", sans-serif;
+    --geologica: "Geologica", sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9rem;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 8rem;
+}
+
+.badge-container {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+.badge-category {
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.horizontal-line {
+    height: 1px;
+    width: 100%;
+    margin-bottom: 4rem;
+    background-color: var(--text-primary);
+}
+
+.badge-case {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+}
+
+.individual-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.badge-description {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 30rem;
+}
+
+.profile-shadow {
+    width: 90%;
+    height: 2rem;
+    background-color: var(--background-primary);
+}
+
+.badge-case {
+    width: 100%;
+    height: 100%;
+}
+
+.badge-shadow {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 100%;
+    background-color: var(--background-primary);
+    border: 0.5rem groove #445566;
+}
+
+.description-shadow {
+    height: 1.5rem;
+    width: 16rem;
+    background-color: var(--background-primary);
+}
+
+.profile-name {
+    text-transform: uppercase;
+    text-shadow: 0 0 0.2rem ;
+    font: bold 1.2rem var(--libre-caslon);
+}
+
+.badge-image {
+    width: 12rem;
+    height: 12rem;
+    object-fit: cover;
+    border-radius: 100%;
+    border: 0.5rem groove var(--primary-color);
+}
