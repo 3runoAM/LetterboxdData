@@ -259,25 +259,25 @@ def get_viewing_streak():
                 "badge_name": "Marathoner",
                 "is_active": False,
                 "image_url": "/static/images/badges/marathoner.png",
-                "description": f"Once you press play, nothing can stop you. Your impressive {max_streak}-day consecutive streak proves you don't just watch movies—you live in an endless cinematic loop."
+                "description": f"Once you press play, nothing can stop you. Your impressive {max_streak}-day consecutive streak proves you don't just watch movies—you live in an endless cinematic loop"
             },
             {
                 "badge_name": "Binge Watcher",
                 "is_active": False,
                 "image_url": "/static/images/badges/binge.png",
-                "description": f"You know exactly how to turn a regular week into a dedicated film festival. With a solid {max_streak}-day streak, you hit the perfect rhythm of non-stop entertainment."
+                "description": f"You know exactly how to turn a regular week into a dedicated film festival. With a solid {max_streak}-day streak, you hit the perfect rhythm of non-stop entertainment"
             },
             {
                 "badge_name": "Casual Streaker",
                 "is_active": False,
                 "image_url": "/static/images/badges/casual.png",
-                "description": f"A quick weekend burst or back-to-back movie nights are your sweet spot. Your {max_streak}-day streak shows you love keeping the momentum going without burning out."
+                "description": f"A quick weekend burst or back-to-back movie nights are your sweet spot. Your {max_streak}-day streak shows you love keeping the momentum going without burning out"
             },
             {
                 "badge_name": "Paced Viewer",
                 "is_active": False,
                 "image_url": "/static/images/badges/paced.png",
-                "description": "You prefer to let every single film breathe. Without keeping daily streaks, you treat movies as standalone events, giving your mind plenty of time to process each story."
+                "description": "You prefer to let every single film breathe. Without keeping daily streaks, you treat movies as standalone events, giving your mind plenty of time to process each story"
             }
         ]
     }
@@ -305,25 +305,25 @@ def get_rating_pattern():
                 "badge_name": "Cinematic Enthusiast",
                 "is_active": False,
                 "image_url": "/static/images/badges/enthusiast.png",
-                "description": f"You find magic in almost everything you watch. With a generous average rating of {avg_rating:.1f} stars, you celebrate the joy of cinema and love giving films the praise they deserve."
+                "description": f"You find magic in almost everything you watch. With a generous average rating of {avg_rating:.1f} stars, you celebrate the joy of cinema and love giving films the praise they deserve"
             },
             {
                 "badge_name": "Balanced Juror",
                 "is_active": False,
                 "image_url": "/static/images/badges/juror.png",
-                "description": f"You treat your ratings with absolute fairness. Your {avg_rating:.1f}-star average shows a perfectly balanced scale, separating the true masterpieces from the average crowd."
+                "description": f"You treat your ratings with absolute fairness. Your {avg_rating:.1f}-star average shows a perfectly balanced scale, separating the true masterpieces from the average crowd"
             },
             {
                 "badge_name": "Strict Connoisseur",
                 "is_active": False,
                 "image_url": "/static/images/badges/connoisseur.png",
-                "description": f"You hold cinema to an exceptionally high standard. An average rating of {avg_rating:.1f} stars means a movie truly has to earn your respect to get a passing grade."
+                "description": f"You hold cinema to an exceptionally high standard. An average rating of {avg_rating:.1f} stars means a movie truly has to earn your respect to get a passing grade"
             },
             {
                 "badge_name": "Brutal Executioner",
                 "is_active": False,
                 "image_url": "/static/images/badges/executioner.png",
-                "description": f"To put it bluntly: you are incredibly hard to please. Your ruthless {avg_rating:.1f}-star average proves that most films simply crumble under your razor-sharp critical gaze."
+                "description": f"To put it bluntly: you are incredibly hard to please. Your ruthless {avg_rating:.1f}-star average proves that most films simply crumble under your razor-sharp critical gaze"
             }
         ]
     }
@@ -344,15 +344,15 @@ def get_decade_preference():
     era_counts = (data_base.session.query(
         Movie.release_year,
         func.count(WatchLog.id).label('count')
-    )
-                  .join(WatchLog.movie)
+    ).join(WatchLog, Movie.id == WatchLog.movie_id)
                   .group_by(Movie.release_year)
+                  .having(func.count(WatchLog.id) >= 5)
                   .all())
 
-    modern_count = 0  # 2010 em diante
-    turn_century_count = 0  # 1990 até 2009
-    retro_count = 0  # 1970 até 1989
-    classic_count = 0  # Antes de 1970
+    modern_count = 0
+    turn_century_count = 0
+    retro_count = 0
+    classic_count = 0
 
     for row in era_counts:
         year = row.release_year
@@ -374,25 +374,25 @@ def get_decade_preference():
                 "badge_name": "Contemporary Fan",
                 "is_active": False,
                 "image_url": "/static/images/badges/contemporary.png",
-                "description": "You live on the cutting edge of cinema. Your history is dominated by the 2010s and 2020s, showcasing your preference for state-of-the-art visuals and current storytelling."
+                "description": "You live on the cutting edge of cinema. Your history is dominated by the 2010s and 2020s, showcasing your preference for state-of-the-art visuals and current storytelling"
             },
             {
                 "badge_name": "Millennial Nostalgic",
                 "is_active": False,
                 "image_url": "/static/images/badges/millennial.png",
-                "description": "Your heart belongs to the era of indie revolutions and peak physical media. Your focus on the 90s and 2000s shows you cherish the generation-defining stories you grew up with."
+                "description": "Your heart belongs to the era of indie revolutions and peak physical media. Your focus on the 90s and 2000s shows you cherish the generation-defining stories you grew up with"
             },
             {
                 "badge_name": "Retro Aficionado",
                 "is_active": False,
                 "image_url": "/static/images/badges/retro.png",
-                "description": "Neon lights, synth pads, and gritty auteur cinema drive your taste. Your heavy focus on the 70s and 80s highlights your deep appreciation for the boldest decades in film history."
+                "description": "Neon lights, synth pads, and gritty auteur cinema drive your taste. Your heavy focus on the 70s and 80s highlights your deep appreciation for the boldest decades in film history"
             },
             {
                 "badge_name": "Golden Age Scholar",
                 "is_active": False,
                 "image_url": "/static/images/badges/golden_age.png",
-                "description": "You worship the foundational pillars of cinema. By dedicating your time mostly to pre-1970 classics, you show a profound respect for black-and-white masterpieces and silver screen icons."
+                "description": "You worship the foundational pillars of cinema. By dedicating your time mostly to pre-1970 classics, you show a profound respect for black-and-white masterpieces and silver screen icons"
             }
         ]
     }

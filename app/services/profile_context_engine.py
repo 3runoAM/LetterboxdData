@@ -31,11 +31,11 @@ def get_favorite_decade():
     result = (data_base.session.query(
         Movie.decade.label("decade"),
         func.avg(WatchLog.rating).label("average_rating"),
-        func.count(WatchLog.id).label("log_count")
-    ).join(WatchLog, Movie.id == WatchLog.movie_id)
+        func.count(WatchLog.id).label("log_count"))
+              .join(WatchLog, Movie.id == WatchLog.movie_id)
               .group_by(Movie.decade)
               .having(func.count(WatchLog.id) >= 5)
-              .order_by(func.avg(WatchLog.rating).desc())
+              .order_by(func.count(WatchLog.id).desc())
               .first())
 
     return result.decade or None
@@ -214,12 +214,13 @@ def get_movie_moment_context():
         Movie.decade.label("decade"),
         func.avg(WatchLog.rating).label("average_rating"),
         func.count(WatchLog.id).label("log_count")
-    ).select_from(WatchLog)
+    )
+                  .select_from(WatchLog)
                   .join(Movie)
                   .join(Movie.genres)
                   .filter(WatchLog.day_of_week == favorite_day, Genre.name == top_genre)
                   .group_by(Movie.decade)
-                  .order_by(func.avg(WatchLog.rating).desc())
+                  .order_by(func.count(WatchLog.id).desc())
                   .first())
 
     top_decade = top_decade.decade
