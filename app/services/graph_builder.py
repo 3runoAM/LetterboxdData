@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -7,7 +6,7 @@ from sqlalchemy import func
 from app import data_base
 from app.config import STOPWORDS_OVERVIEW
 from wordcloud import WordCloud, STOPWORDS
-from PIL import Image, ImageOps
+from PIL import Image
 
 from app.models import WatchLog, Movie
 
@@ -227,9 +226,6 @@ def plot_points_graph_per_period(genre_category_points_list):
             )
         )
         return fig.to_html(full_html=False)
-
-    for genre_category_points in genre_category_points_list:
-        print(genre_category_points)
 
     df_week = pd.DataFrame(genre_category_points_list[0]) if genre_category_points_list[0]["categories"] is not None else None
     df_month = pd.DataFrame(genre_category_points_list[1]) if genre_category_points_list[1]["categories"] is not None else None
